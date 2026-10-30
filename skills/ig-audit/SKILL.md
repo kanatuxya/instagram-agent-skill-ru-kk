@@ -1,14 +1,18 @@
 ---
 name: ig-audit
 description: >-
-  Post-mortem on what the user has already posted - which reels actually
-  worked, why, and what to stop making. Use when the user pastes their
-  Instagram insights or past posts and asks "what's working", "why did this
-  flop", "read my analytics", "audit my content", or wants to know what to do
-  more of.
+  Разбор уже опубликованного в Instagram: какие рилсы реально сработали,
+  почему и что перестать делать. Используй, когда пользователь присылает
+  статистику (insights) или прошлые посты и спрашивает «что работает», «почему
+  не залетело», «разбери аналитику», «аудит контента», «статистиканы талдап
+  бер», «what's working», «audit my content».
 ---
 
 # ig-audit
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
 
 The only honest source of what works for an account is that account. Every
 rule in every Instagram guide, including the ones in this pack, is a prior.

@@ -1,13 +1,21 @@
 ---
 name: ig-carousel
 description: >-
-  Build an Instagram carousel - the cover that earns the swipe, slide-by-slide
-  copy, and the 1080x1350 files to upload. Use when the user says "carousel",
-  "slides", "swipe post", "turn this into a carousel", or has a list-shaped or
-  step-shaped idea that would die as a single image.
+  Карусель для Instagram: обложка, ради которой листают, текст по слайдам и
+  файлы 1080x1350. Если в проекте есть свой файл формата каруселей, работает
+  по нему. Используй, когда просят «карусель», «слайды», «сделай карусель из
+  этого», «карусель жаса», или идея похожа на список или шаги. Carousel,
+  slides.
 ---
 
 # ig-carousel
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
+
+- Если в проекте есть свой файл формата каруселей (скелет, шрифты, цвета, финальный слайд), он главнее этого файла. Если есть свой пайплайн рендера слайдов, собирай файлы по нему.
+- Текст слайдов прогоняй через `/ig-human`. Капс на обложке, «→» в конце слайда и списки через «—» там формат, а не ошибка.
 
 Carousels are the highest-dwell format on the grid, because a swipe is an
 interaction and a scroll is not. They also get a second chance: Instagram can

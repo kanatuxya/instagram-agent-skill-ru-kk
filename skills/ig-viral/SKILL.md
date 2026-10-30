@@ -1,16 +1,23 @@
 ---
 name: ig-viral
 description: >-
-  Go and find the reels that are actually working right now in the user's
-  niche, rank them by how far each beat its own account, name the hook formula
-  each one used, and turn that into a swipe file they can shoot from. Use when
-  the user says "find viral videos", "what's working right now", "what are
-  people posting in my niche", "reverse engineer this account", "build me a
-  swipe file", "why is this reel doing numbers", or asks what to make next and
-  has no evidence to answer with.
+  Находит рилсы, которые сейчас реально работают в нише пользователя,
+  ранжирует их по тому, во сколько раз они обогнали свой аккаунт, называет
+  формулу хука и собирает swipe-файл. Используй, когда просят «найди вирусные
+  видео», «что сейчас заходит», «что постят в моей нише», «разбери этот
+  аккаунт», «собери референсы», «нишада не жүріп жатыр», или пользователь не
+  знает, что снимать дальше. Viral research, swipe file.
 ---
 
 # ig-viral
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
+
+- `swipe.py` называет формулу хука на английском, русском и казахском. Регулярки для ru/kk написаны по формулам, а не проверены на корпусе, так что unclassified будет больше: читай их руками.
+- Субтитры YouTube Shorts бери на языке ниши: `--sub-langs "ru.*,kk.*"`.
+- Аккаунты для разбора ищи на своем рынке (Казахстан, Узбекистан, русскоязычные), а форматы можно брать и у англоязычных.
 
 The research skill. Everything else in this pack writes; this one goes and
 looks. Run it monthly, not daily. Formulas last a season.
@@ -95,7 +102,7 @@ python3 -m yt_dlp --flat-playlist --playlist-end 40 -J \
   "https://www.youtube.com/@HANDLE/shorts" > channel.json
 
 # the spoken first line of one short, from its auto-captions
-python3 -m yt_dlp --skip-download --write-auto-subs --sub-langs "en.*" \
+python3 -m yt_dlp --skip-download --write-auto-subs --sub-langs "ru.*,kk.*,en.*" \
   --sub-format json3 -o hook "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 

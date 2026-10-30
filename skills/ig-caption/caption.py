@@ -35,12 +35,14 @@ HASHTAG_LIMIT = 5        # Instagram's cap per post or reel since 18 Dec 2025,
                          # rather than many generic ones, can improve both your
                          # content's performance and people's experience".
 
-HASHTAG_RE = re.compile(r"(?:^|\s)(#[A-Za-z0-9_]+)")
+HASHTAG_RE = re.compile(r"(?:^|\s)(#\w+)")
 MENTION_RE = re.compile(r"(?:^|\s)(@[A-Za-z0-9_.]+)")
-LINK_RE = re.compile(r"https?://\S+|\bwww\.\S+|\b[a-z0-9-]+\.(?:com|co|io|net|org|ai|app)/\S*",
+LINK_RE = re.compile(r"https?://\S+|\bwww\.\S+|\b[a-z0-9-]+\.(?:com|co|io|net|org|ai|app|kz|me)/\S*",
                      re.IGNORECASE)
 EMOJI_RE = re.compile(r"[\U0001F300-\U0001FAFF☀-➿←-⇿️]")
-CONCRETE_RE = re.compile(r"\$\s?\d|\b\d[\d,.]*\b|(?<!^)\b[A-Z][a-z]{2,}\b", re.MULTILINE)
+CONCRETE_RE = re.compile(r"\$\s?\d|\b\d[\d,.]*\b|(?<!^)\b[A-ZА-ЯЁӘҒҚҢӨҰҮҺІ][a-zа-яёәғқңөұүһі]{2,}\b",
+                         re.MULTILINE)
+KEYWORD = r"[«\"]?[A-ZА-ЯЁӘҒҚҢӨҰҮҺІ0-9]{3,}[»\"]?"   # the word they type: КОНТРАКТ, ШАБЛОН
 
 ASKS = [
     (re.compile(r"(?i)\bcomment (?:the word |\")?[A-Z0-9]{2,}\b"), "comment a keyword"),
@@ -51,11 +53,60 @@ ASKS = [
     (re.compile(r"(?i)\blink in (?:my )?bio\b"), "link in bio"),
     (re.compile(r"(?i)\b(?:swipe|tap) (?:through|left|right|for|to)\b"), "swipe or tap"),
     (re.compile(r"(?i)\btell me\b|\bwhat would you\b|\bwhich one\b"), "answer a question"),
+    # Russian. "Оставь в комментариях нишу" asks for a word too, so it counts
+    # as the keyword ask even without a word in capitals.
+    (re.compile(r"(?i)\b(?:напиши|пиши|оставь|оставьте|напишите|пишите)\b[^.!?\n]{0,40}"
+                r"\bв\s+коммент\w*|(?-i:\b(?:[Нн]апиши|[Пп]иши)(?:те)?\s+(?:слово\s+)?" + KEYWORD + r")"),
+     "comment a keyword"),
+    (re.compile(r"(?i)\b(?:напиши|пиши|напишите|пишите)\s+(?:мне\s+)?в\s+(?:директ|личку|лс|direct)\b"),
+     "DM me"),
+    (re.compile(r"(?i)\bсохрани(?:те)?\b|\bсохраняй(?:те)?\b"), "save this"),
+    (re.compile(r"(?i)\bотправь(?:те)?\b[^.!?\n]{0,30}\b(?:другу|подруге|тому|коллеге|тем)\b"
+                r"|\bперешли(?:те)?\b|\bподелись\b"), "share this"),
+    (re.compile(r"(?i)\bподпиш(?:ись|итесь)\b"), "follow"),
+    (re.compile(r"(?i)\bссылк\w*\s+в\s+(?:шапке|профиле|био)\b|\bв\s+шапке\s+профиля\b"),
+     "link in bio"),
+    (re.compile(r"(?i)\bлистай(?:те)?\b"), "swipe or tap"),
+    (re.compile(r"(?i)\bа\s+(?:ты|вы|у\s+тебя|у\s+вас)\b[^?\n]{0,40}\?|\bкакой\s+(?:вариант|бы\s+ты)\b"
+                r"|\bнапиши(?:те)?,?\s+(?:как|что|какой|какая|какие)\b"), "answer a question"),
+    # Kazakh
+    (re.compile(r"(?i)\b(?:пікірге|комментарийге|комментке)\b[^.!?\n]{0,40}\bжаз\w*"
+                r"|(?-i:" + KEYWORD + r")\s+деп\s+жаз\w*"), "comment a keyword"),
+    (re.compile(r"(?i)\bдиректке\s+жаз\w*|\bжеке\s+хат\w*\s+жаз\w*"), "DM me"),
+    (re.compile(r"(?i)\bсақтап\s+(?:қой|ал)\w*|\bсақтаңыз\b"), "save this"),
+    (re.compile(r"(?i)\b(?:досыңа|досыңызға|әріптесіңе|әріптесіңізге|жақыныңа)\s+жібер\w*|\bбөліс\w*"),
+     "share this"),
+    (re.compile(r"(?i)\bжазыл(?:ыңыз|ыңыздар)\b|\bжазылып\s+қой\w*"), "follow"),
+    (re.compile(r"(?i)\bсілтеме\w*\s+(?:профильде|биода|парақшада|шапкада)\b"), "link in bio"),
+    (re.compile(r"(?i)\bпарақта(?:ңыз|)\b|\bсырғыт\w*"), "swipe or tap"),
+    (re.compile(r"(?i)\b(?:сен|сіз)\s+(?:қалай|не)\s+[^?\n]{0,30}\?|\bқайсысы\b[^?\n]*\?|\bжазыңызшы\b"),
+     "answer a question"),
 ]
 
 FILLER_TAGS = {"#viral", "#fyp", "#explore", "#explorepage", "#foryou", "#foryoupage",
                "#trending", "#instagood", "#love", "#follow", "#like4like", "#reels",
-               "#reelsinstagram", "#viralreels", "#instadaily"}
+               "#reelsinstagram", "#viralreels", "#instadaily",
+               "#рек", "#реки", "#рекомендации", "#рекомендация", "#хочуврек", "#хочувтоп",
+               "#врек", "#тренд", "#тренды", "#популярное", "#инстаграм", "#рилс", "#рилсы",
+               "#вирусное", "#втоп", "#рекке"}
+
+
+def _stem(word):
+    """Cyrillic inflects: "клиентов" should find "клиент". Latin stays exact."""
+    if len(word) <= 3 or not re.search(r"[а-яёәғқңөұүһі]", word):
+        return word
+    return word[:max(3, len(word) - 2)]
+
+
+def term_present(term, text):
+    """Exact phrase, or (for Cyrillic) every word of it present in some inflected form."""
+    low = text.lower()
+    if term.lower() in low:
+        return True
+    stems = [_stem(w) for w in term.lower().split()]
+    toks = re.findall(r"\w+", low)
+    return all(any(t.startswith(s) for t in toks) for s in stems) and any(
+        _stem(w) != w for w in term.lower().split())
 
 
 def visible_window(text, cut):
@@ -155,10 +206,9 @@ def analyse(text, cut=TRUNCATE, keywords=None):
         + (" - reads as decoration" if density > 4 else ""))
 
     if keywords:
-        low = stripped.lower()
-        found = [k for k in keywords if k.lower() in low]
-        missing = [k for k in keywords if k.lower() not in low]
-        in_window = [k for k in found if k.lower() in window.lower()]
+        found = [k for k in keywords if term_present(k, stripped)]
+        missing = [k for k in keywords if k not in found]
+        in_window = [k for k in found if term_present(k, window)]
         status = "PASS" if not missing else ("WARN" if found else "FAIL")
         add("SEARCH TERMS", status,
             f"{len(found)}/{len(keywords)} present"

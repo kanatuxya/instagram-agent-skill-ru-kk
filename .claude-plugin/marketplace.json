@@ -1,18 +1,18 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "instagram-agent-skill",
-  "description": "The Instagram agent skill pack for Claude",
+  "name": "instagram-agent-skill-ru-kk",
+  "description": "The Instagram agent skill pack for Claude, adapted for Russian and Kazakh",
   "owner": {
-    "name": "Jake Schincariol",
-    "url": "https://opusjake.ai"
+    "name": "kanatuxya",
+    "url": "https://github.com/kanatuxya"
   },
   "plugins": [
     {
       "name": "instagram-agent",
-      "description": "Thirteen Claude skills that run an Instagram account, including a scored hook panel, a viral research skill, a caption linter and a humanizer.",
+      "description": "Thirteen Claude skills that run an Instagram account, including a scored hook panel, a viral research skill, a caption linter and a humanizer. Adapted for Russian and Kazakh.",
       "source": "./",
       "category": "productivity",
-      "homepage": "https://github.com/Jakeschincariol/instagram-agent-skill"
+      "homepage": "https://github.com/kanatuxya/instagram-agent-skill-ru-kk"
     }
   ]
 }

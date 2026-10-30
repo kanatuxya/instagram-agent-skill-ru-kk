@@ -1,15 +1,24 @@
 ---
 name: ig-reel
 description: >-
-  Write an Instagram Reel from a raw idea - hook options off 26 formulas, the
-  spoken script, the on-screen text, and a timed beat sheet - in the user's own
-  voice and scored before they shoot it. Use whenever the user wants a Reel, a
-  short-form video script, a hook, a voiceover, "make a reel about X", "what
-  should I say in this video", or is about to record and does not have the
-  first line yet.
+  Рилс из сырой идеи на русском или казахском: три хука по 26 формулам с
+  оценкой, текст для озвучки, текст на экран и раскадровка по секундам.
+  Используй, когда просят рилс, сценарий короткого видео, хук или озвучку:
+  «сделай рилс про…», «что сказать в видео», «рилс жаса», «видеоға сценарий»,
+  или пользователь собирается снимать и не знает первую фразу. Reel,
+  short-form script, hook.
 ---
 
 # ig-reel
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
+
+- Язык рилса по умолчанию записан в voice.md (поле «Какой язык у поста»). Если там пусто, спроси.
+- Хуки пиши от `template_ru` / `template_kk`, `example_*` и `on_screen_*` в `hooks.json`, а не переводом английского шаблона.
+- Текст на экране: 3-5 слов на карточку, кириллица шире латиницы.
+- `beats.py` считает русский и казахский по слогам, 5,2 в секунду. Личный темп из voice.md передавай через `--sps`. В квитанции пиши темп так, как его печатает скрипт.
 
 Turns one raw idea into a Reel that somebody finishes.
 

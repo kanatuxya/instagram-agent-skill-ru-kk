@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "note": "26 hook formulas for Reels. A Reel has two hooks that fire at the same time and they are not the same sentence: the first thing you say, and the first thing on screen. The spoken hook has about two seconds. The on-screen hook has about one, because it is read before it is heard. Every formula here carries a template, a filled example, the on-screen version, what it is for, and the way it usually gets ruined. Each formula also carries a `match` regex, so the same vocabulary can name a hook found in the wild and not only write a new one. Walk them in `classify_order`, which is most specific first, case-insensitive.",
+  "note": "26 hook formulas for Reels. A Reel has two hooks that fire at the same time and they are not the same sentence: the first thing you say, and the first thing on screen. The spoken hook has about two seconds. The on-screen hook has about one, because it is read before it is heard. Every formula here carries a template, a filled example, the on-screen version, what it is for, and the way it usually gets ruined. Each formula also carries a `match` regex, so the same vocabulary can name a hook found in the wild and not only write a new one. Walk them in `classify_order`, which is most specific first, case-insensitive. Every formula also carries template/example/on_screen/match in Russian (_ru) and Kazakh (_kk). The ru/kk regexes were written against the formulas, not tested on a corpus of real hooks the way the English ones were: expect them to name fewer hooks in the wild, and read the unclassified ones by hand.",
   "rules": [
     "Write the spoken line and the on-screen line separately. On screen is the shorter, blunter one, six words or fewer, no punctuation it does not need.",
     "No setup. The video starts at the sentence you would normally reach at second six.",
@@ -18,7 +18,15 @@
       "on_screen": "$18,000 MISTAKE",
       "best_for": "Trust, fast. People finish the videos where you are the one who looks bad.",
       "trap": "A fake cost. 'It cost me my peace of mind' is not a number and everybody can hear that.",
-      "match": "\\$\\s?\\d[\\d,]*\\s+(?:is|was) what\\b|\\bcost (?:me|us|him|her|them)\\b|\\blost\\b[^.!?]{0,20}\\$\\s?\\d"
+      "match": "\\$\\s?\\d[\\d,]*\\s+(?:is|was) what\\b|\\bcost (?:me|us|him|her|them)\\b|\\blost\\b[^.!?]{0,20}\\$\\s?\\d",
+      "template_ru": "{Конкретная сумма}: столько мне стоила {одна ошибка}.",
+      "example_ru": "1,8 млн тенге. Столько мне стоил один пункт в договоре.",
+      "on_screen_ru": "ОШИБКА НА 1,8 МЛН ₸",
+      "match_ru": "\\bстоил[аио]?\\s+(?:мне|нам|ему|ей|им)\\b|\\bобош(?:[её]л|л[аио])(?:сь|ся)?\\s+(?:мне|нам)\\b|\\b(?:мне|нам)\\s+стоил[аио]?\\b|\\bстолько\\s+(?:мне\\s+|нам\\s+)?стоил|\\b(?:потерял|слил)[аи]?\\b[^.!?]{0,30}\\d",
+      "template_kk": "{Бір қателік} маған {нақты сомаға} түсті.",
+      "example_kk": "Шарттағы бір ғана тармақ маған 1,8 млн теңгеге түсті.",
+      "on_screen_kk": "1,8 МЛН ₸ ҚАТЕЛІК",
+      "match_kk": "\\b(?:маған|бізге)\\b[^.!?]{0,40}\\b(?:тұрды|түсті)\\b|\\d[^.!?]{0,30}\\b(?:тұрды|түсті)\\b|\\bжоғалтт(?:ым|ық)\\b"
     },
     {
       "id": 2,
@@ -28,7 +36,15 @@
       "on_screen": "STOP POSTING DAILY",
       "best_for": "Saves and arguments. The imperative gets attention that a statement does not.",
       "trap": "Telling people to stop doing something nobody does. The habit has to be one the viewer recognises in themselves.",
-      "match": "^\\s*(?:stop|quit|never|don'?t|dont|please)\\b[^.!?]{0,30}\\b(?:do|be|make|buy|use|start|say|post|send|take|charge)?\\b|\\b(?:do not|don'?t|dont|never) (?:do|be|make|buy|use|start|say|post|take)\\b|\\bquit your\\b"
+      "match": "^\\s*(?:stop|quit|never|don'?t|dont|please)\\b[^.!?]{0,30}\\b(?:do|be|make|buy|use|start|say|post|send|take|charge)?\\b|\\b(?:do not|don'?t|dont|never) (?:do|be|make|buy|use|start|say|post|take)\\b|\\bquit your\\b",
+      "template_ru": "Хватит {привычное действие}. Делай {другое}.",
+      "example_ru": "Хватит выкладывать три поста в день. Выкладывай два и час отвечай на комментарии.",
+      "on_screen_ru": "ХВАТИТ ПОСТИТЬ КАЖДЫЙ ДЕНЬ",
+      "match_ru": "^\\s*(?:хватит|перестань(?:те)?|брось(?:те)?|никогда не)\\b|^\\s*не\\s+(?:делай|покупай|пиши|снимай|начинай|бери|ставь|выкладывай|публикуй)(?:те)?\\b",
+      "template_kk": "{Әдеттегі әрекетті} доғар. Оның орнына {басқасын} жаса.",
+      "example_kk": "Күніне үш пост салуды доғар. Екеуін сал да, бір сағат пікірлерге жауап бер.",
+      "on_screen_kk": "КҮНДЕ ПОСТ САЛМА",
+      "match_kk": "^\\s*(?:тоқта|ешқашан)\\b|\\bдоғар(?:ыңыз|ыңдар)?\\b|\\b[^\\W\\d_]{2,}(?:ма|ме|ба|бе|па|пе)(?:ңыз|ңіз|ңдар|ңдер)\\b|\\b[^\\W\\d_]{3,}(?:ма|ме|ба|бе|па|пе)\\s*[.!]"
     },
     {
       "id": 3,
@@ -38,7 +54,15 @@
       "on_screen": "YOUR FIRST 30 WILL FLOP",
       "best_for": "New audiences. It positions you as the person who says the quiet part.",
       "trap": "Picking a truth everybody already says. If the comments are agreeing before you finish, it was not a secret.",
-      "match": "\\b(?:nobody|no one|nobody ever)\\s+(?:ever\\s+)?(?:tells|told|talks|talked|says|said|mentions|teaches)\\b|\\bwhat (?:nobody|no one) (?:tells|says)\\b"
+      "match": "\\b(?:nobody|no one|nobody ever)\\s+(?:ever\\s+)?(?:tells|told|talks|talked|says|said|mentions|teaches)\\b|\\bwhat (?:nobody|no one) (?:tells|says)\\b",
+      "template_ru": "Никто не говорит тебе, что {неудобная правда о том, чего хочешь}.",
+      "example_ru": "Никто не говорит тебе, что первые 30 рилсов должны провалиться.",
+      "on_screen_ru": "ПЕРВЫЕ 30 ПРОВАЛЯТСЯ",
+      "match_ru": "\\b(?:никто|ни один\\s+\\w+)\\s+(?:(?:тебе|вам|об этом)\\s+)?(?:не\\s+)?(?:говорит|скажет|сказал|рассказывает|расскажет|предупреждает|предупредил|учит|объясняет)\\b|\\bо ч[её]м (?:молчат|не говорят)\\b|\\bчего (?:вам|тебе) не (?:скажут|говорят)\\b",
+      "template_kk": "{Ыңғайсыз шындықты} саған ешкім айтпайды.",
+      "example_kk": "Алғашқы 30 рилсің құлайтынын саған ешкім айтпайды.",
+      "on_screen_kk": "АЛҒАШҚЫ 30 ҚҰЛАЙДЫ",
+      "match_kk": "\\bешкім\\b[^.!?]{0,40}\\b(?:айтпайды|айтпаған|айтпады|үйретпейді|ескертпейді|түсіндірмейді)\\b|\\bешкім айтпайтын\\b"
     },
     {
       "id": 4,
@@ -48,7 +72,15 @@
       "on_screen": "$2,000 -> $12",
       "best_for": "Demos and tool videos. The price gap does the work.",
       "trap": "Overstating the replacement. If it replaced 60% of the job, say 60%, or the comments will say it for you.",
-      "match": "\\breplaced?\\b[^.!?]*\\$\\s?\\d|\\$\\s?\\d[^.!?]*\\breplaced?\\b|\\binstead of (?:paying|hiring)\\b"
+      "match": "\\breplaced?\\b[^.!?]*\\$\\s?\\d|\\$\\s?\\d[^.!?]*\\breplaced?\\b|\\binstead of (?:paying|hiring)\\b",
+      "template_ru": "{Эта штука} заменила {дорогую} за {цену}.",
+      "example_ru": "Шаблон за 5 000 тенге заменил мне монтажера за 400 000 в месяц.",
+      "on_screen_ru": "400 000 ₸ → 5 000 ₸",
+      "match_ru": "\\bзаменил[аио]?\\b|\\bвместо того,? чтобы (?:платить|нанимать|покупать)\\b|\\bвместо (?:сотрудника|менеджера|агентства|подрядчика|монтажера|монтажёра)\\b",
+      "template_kk": "{Мына нәрсе} {қымбат нәрсенің} орнын {бағаға} басты.",
+      "example_kk": "5 000 теңгелік шаблон айына 400 000 алатын монтажердің орнын басты.",
+      "on_screen_kk": "400 000 ₸ → 5 000 ₸",
+      "match_kk": "\\bалмастырд(?:ым|ық|ы)\\b|\\bорнын\\s+басты\\b|\\bорнына\\b[^.!?]{0,40}\\d|\\d[^.!?]{0,40}\\bорнына\\b|\\b(?:жалдаудың|төлеудің) орнына\\b"
     },
     {
       "id": 5,
@@ -58,7 +90,15 @@
       "on_screen": "5 HOURS -> 20 MIN",
       "best_for": "Process videos where the payoff is speed. Reads instantly on screen.",
       "trap": "A ratio nobody believes. 40 hours to 4 seconds gets treated as a lie even when it is true.",
-      "match": "\\bused to take\\b|\\bnow (?:it )?(?:only )?takes?\\b|\\btakes? (?:me )?\\d+\\s*(?:sec|second|min|minute|hour|hr)"
+      "match": "\\bused to take\\b|\\bnow (?:it )?(?:only )?takes?\\b|\\btakes? (?:me )?\\d+\\s*(?:sec|second|min|minute|hour|hr)",
+      "template_ru": "Раньше {задача} занимала у меня {долго}. Теперь {коротко}.",
+      "example_ru": "Раньше КП занимало у меня пять часов. Теперь двадцать минут.",
+      "on_screen_ru": "5 ЧАСОВ → 20 МИНУТ",
+      "match_ru": "\\bраньше\\b[^.!?]{0,40}\\b(?:занимал[аио]?|уходил[аио]?|тратил[аи]?)\\b|\\bтеперь (?:это )?(?:занимает|уходит)\\b|\\bза \\d+\\s*(?:сек|секунд|мин|минут|час)",
+      "template_kk": "Бұрын {тапсырмаға} {ұзақ уақыт} кететін. Қазір {қысқа}.",
+      "example_kk": "Бұрын коммерциялық ұсынысқа бес сағат кететін. Қазір жиырма минут.",
+      "on_screen_kk": "5 САҒАТ → 20 МИНУТ",
+      "match_kk": "\\bбұрын\\b[^.!?]{0,50}\\b(?:кететін|алатын|жұмсайтын|кетті)\\b|\\bқазір\\b[^.!?]{0,30}\\b(?:минут|секунд|сағат)\\w*|\\b\\d+\\s*(?:минутта|секундта|сағатта)\\b"
     },
     {
       "id": 6,
@@ -68,7 +108,15 @@
       "on_screen": "60 DAYS. REAL NUMBERS.",
       "best_for": "Experiments. Pairs with a screen recording of the real dashboard, which is the whole value.",
       "trap": "Not showing the screen. A numbers video with no screen recording is a numbers claim.",
-      "match": "\\bi\\s+\\w+(?:ed)?\\s+[^.!?]{0,30}\\bfor\\s+\\d+\\s+(?:days?|weeks?|months?|years?)\\b|\\bhere (?:are|is) (?:the|my)\\b[^.!?]*\\bnumbers\\b|\\bwe(?:'ll| will)? do \\$\\s?\\d"
+      "match": "\\bi\\s+\\w+(?:ed)?\\s+[^.!?]{0,30}\\bfor\\s+\\d+\\s+(?:days?|weeks?|months?|years?)\\b|\\bhere (?:are|is) (?:the|my)\\b[^.!?]*\\bnumbers\\b|\\bwe(?:'ll| will)? do \\$\\s?\\d",
+      "template_ru": "Я {делал X} {N дней}. Вот реальные цифры.",
+      "example_ru": "Я 60 дней выкладывал по рилсу в день. Вот что стало с директом.",
+      "on_screen_ru": "60 ДНЕЙ. ЦИФРЫ.",
+      "match_ru": "\\b(?:вот|показываю) (?:мои |все |реальные |честные )?(?:цифры|результаты|отч[её]т)\\b|\\bя\\b[^.!?]{0,30}\\b\\d+\\s+(?:дней|день|дня|недел[ьиюя]|месяц(?:а|ев)?)\\b",
+      "template_kk": "{N күн} бойы {X} жасадым. Міне, нақты сандар.",
+      "example_kk": "60 күн бойы күнде бір рилс салдым. Директке не болғанын көрсетемін.",
+      "on_screen_kk": "60 КҮН. САНДАР.",
+      "match_kk": "\\bміне,?\\s+(?:нақты\\s+)?(?:сандар|нәтиже|нәтижелер|есеп)\\b|\\b\\d+\\s+(?:күн|апта|ай|жыл)\\s+бойы\\b"
     },
     {
       "id": 7,
@@ -78,7 +126,15 @@
       "on_screen": "YOUR CAPTIONS ARE CUT",
       "best_for": "Teaching. The 'not your fault' half stops it reading as an insult, which is what kills this one.",
       "trap": "Skipping the absolution. 'You are doing it wrong' on its own makes people leave rather than learn.",
-      "match": "\\b(?:big(?:gest)?|common|the) mistake\\b|\\bmistake (?:that|people|i)\\b|\\byou'?(?:re| are) doing\\b[^.!?]*\\bwrong\\b|\\bdoing (?:it|this) wrong\\b"
+      "match": "\\b(?:big(?:gest)?|common|the) mistake\\b|\\bmistake (?:that|people|i)\\b|\\byou'?(?:re| are) doing\\b[^.!?]*\\bwrong\\b|\\bdoing (?:it|this) wrong\\b",
+      "template_ru": "Ты делаешь {X} неправильно, и ты не виноват. {Решение}.",
+      "example_ru": "Ты неправильно пишешь подписи, и ты не виноват. Инстаграм прячет все после первой строки.",
+      "on_screen_ru": "ТВОИ ПОДПИСИ ОБРЕЗАНЫ",
+      "match_ru": "\\b(?:главная|частая|самая частая|типичная|большая) ошибк\\w*|\\bошибк\\w* (?:которую|которые|всех|новичков)\\b|\\b(?:ты|вы) (?:\\w+\\s+)?неправильно\\b|\\bделаешь (?:это |так )?не так\\b|\\bделаете (?:это |так )?не так\\b",
+      "template_kk": "{X}-ті қате жасап жүрсің, бірақ кінә сенде емес. {Шешімі}.",
+      "example_kk": "Жазбаларды қате жазып жүрсің, бірақ кінә сенде емес. Инстаграм бірінші жолдан кейінгінің бәрін жасырады.",
+      "on_screen_kk": "ЖАЗБАҢ КЕСІЛІП ҚАЛАДЫ",
+      "match_kk": "\\b(?:басты|жиі|үлкен|ең үлкен|көп кездесетін)\\s+қате(?:лік)?\\w*|\\bқате\\s+(?:жасап|жазып|істеп|айтып)\\s+жүр(?:сің|сіз|сіздер|міз)\\b"
     },
     {
       "id": 8,
@@ -88,7 +144,15 @@
       "on_screen": "6 YEARS INSIDE",
       "best_for": "Authority without a credential slide. Works only if the years are real.",
       "trap": "Promising a secret and delivering the brochure. The comments are merciless about this one.",
-      "match": "\\bi (?:spent|worked|ran|was|have been)\\b[^.!?]*\\b\\d+\\s*\\+?\\s*years?\\b|\\bwe never (?:told|said|showed)\\b|\\bnobody (?:puts|tells you about)\\b|\\bi (?:sell|sold|run)\\b[^.!?]*\\$\\s?\\d"
+      "match": "\\bi (?:spent|worked|ran|was|have been)\\b[^.!?]*\\b\\d+\\s*\\+?\\s*years?\\b|\\bwe never (?:told|said|showed)\\b|\\bnobody (?:puts|tells you about)\\b|\\bi (?:sell|sold|run)\\b[^.!?]*\\$\\s?\\d",
+      "template_ru": "Я {N лет} {был внутри X}. Вот о чем там молчат.",
+      "example_ru": "Я 6 лет продавал услуги агентства. Вот чего мы никогда не писали в КП.",
+      "on_screen_ru": "6 ЛЕТ ВНУТРИ",
+      "match_ru": "\\bя\\b[^.!?]{0,20}\\b\\d+\\s*\\+?\\s*(?:лет|года?)\\b[^.!?]{0,30}\\b\\w+л[аи]?\\b|\\bя (?:работал|проработал|руководил|был)[аи]?\\b[^.!?]{0,40}\\b\\d+\\s*\\+?\\s*(?:лет|года?)\\b|\\bмы никогда не (?:говорили|писали|рассказывали|показывали)\\b|\\bо ч[её]м (?:там |у нас )?молчат\\b",
+      "template_kk": "{N жыл} {X ішінде} болдым. Сол жақта не айтылмайтынын айтайын.",
+      "example_kk": "Агенттікте 6 жыл қызмет саттым. Ұсынысқа ешқашан не жазбайтынымызды айтайын.",
+      "on_screen_kk": "ІШІНДЕ 6 ЖЫЛ",
+      "match_kk": "\\b\\d+\\s*(?:жыл|жылдай)\\b[^.!?]{0,40}\\b(?:жұмыс істедім|істедім|басқардым|болдым|саттым)\\b|\\b(?:жұмыс істедім|басқардым)\\b[^.!?]{0,30}\\b\\d+\\s*жыл\\b|\\bайтылмайтын\\b|\\bешқашан\\b[^.!?]{0,30}\\b(?:жазбайтын|айтпайтын)\\w*"
     },
     {
       "id": 9,
@@ -98,7 +162,15 @@
       "on_screen": "STEAL THIS",
       "best_for": "Saves and sends, which are the two metrics that move reach the most.",
       "trap": "The artifact not being on screen. If they cannot screenshot it, there is nothing to steal.",
-      "match": "^\\s*steal\\b|\\bsteal (?:this|these|my)\\b|^\\s*(?:here'?s|this is) (?:the|my) (?:exact|literal)\\b"
+      "match": "^\\s*steal\\b|\\bsteal (?:this|these|my)\\b|^\\s*(?:here'?s|this is) (?:the|my) (?:exact|literal)\\b",
+      "template_ru": "Забирай {мой шаблон}. На него ушло {время}.",
+      "example_ru": "Забирай мой текст дожима в четыре строки. На него ушло два года и куча слитых лидов.",
+      "on_screen_ru": "ЗАБИРАЙ",
+      "match_ru": "^\\s*(?:забирай(?:те)?|кради(?:те)?|укради(?:те)?|копируй(?:те)?)\\b|\\b(?:укради|забери|забирай|копируй)(?:те)?\\s+(?:этот|эти|мой|мои|мою)\\b|^\\s*(?:вот|это) (?:мой|точный|тот самый) (?:шаблон|скрипт|чек-?лист|текст)\\b",
+      "template_kk": "{Шаблонымды} ал. Оған {уақыт} кетті.",
+      "example_kk": "Төрт жолдық follow-up шаблонымды ал. Оған екі жыл мен талай жоғалған клиент кетті.",
+      "on_screen_kk": "ШАБЛОНДЫ АЛ",
+      "match_kk": "^\\s*(?:алыңыз|алыңдар|көшіріңіз|көшір|сақтап ал)\\b|\\b(?:шаблонды|шаблонымды|скриптімді|тізімді|мәтінімді)\\s+(?:ал|алыңыз|көшір|көшіріңіз)\\b|^\\s*міне,?\\s+(?:менің|сол)\\s+(?:шаблоным|скриптім)\\b"
     },
     {
       "id": 10,
@@ -108,7 +180,15 @@
       "on_screen": "VIEWS BUT NO FOLLOWERS?",
       "best_for": "Qualifying hard. Fewer people stay, and the ones who do are the ones who buy.",
       "trap": "A situation so broad it qualifies nobody. 'If you want to grow' is not a situation.",
-      "match": "^\\s*if (?:you|i|we|your|my|they)\\b"
+      "match": "^\\s*if (?:you|i|we|your|my|they)\\b",
+      "template_ru": "Если ты {конкретная ситуация}, следующие {N секунд} это исправят.",
+      "example_ru": "Если у рилсов есть просмотры, но нет подписчиков, следующие 40 секунд это исправят.",
+      "on_screen_ru": "ПРОСМОТРЫ ЕСТЬ, ПОДПИСОК НЕТ?",
+      "match_ru": "^\\s*если (?:ты|вы|у тебя|у вас|у рилсов|твой|ваш|твоя|ваша|твои|ваши|я|мы)\\b",
+      "template_kk": "Егер {нақты жағдай} болса, келесі {N секунд} соны түзейді.",
+      "example_kk": "Егер рилсің көрілсе, бірақ жазылушы келмесе, келесі 40 секунд соны түзейді.",
+      "on_screen_kk": "ҚАРАЛЫМ БАР, ЖАЗЫЛУШЫ ЖОҚ ПА?",
+      "match_kk": "^\\s*егер\\b|^[^.!?]{0,50}\\b\\w+(?:саң|сең|саңыз|сеңіз)\\b"
     },
     {
       "id": 11,
@@ -118,7 +198,15 @@
       "on_screen": "5 EDITS. #4 IS THE ONE.",
       "best_for": "Retention through the middle: naming a favourite gives people a reason to stay past three.",
       "trap": "N above seven. Nobody believes you have nine good ones, and you do not.",
-      "match": "^\\s*(?:here are\\s+)?\\d+\\s+\\w+|\\bnumber \\d+\\b|\\b(?:three|four|five|seven|ten)\\s+\\w+\\s+(?:every|that|you)\\b"
+      "match": "^\\s*(?:here are\\s+)?\\d+\\s+\\w+|\\bnumber \\d+\\b|\\b(?:three|four|five|seven|ten)\\s+\\w+\\s+(?:every|that|you)\\b",
+      "template_ru": "{N} {вещей}, которые {результат}. Номер {k} не делает никто.",
+      "example_ru": "Пять правок в подписи, которые удваивают сохранения. Четвертую не делает никто.",
+      "on_screen_ru": "5 ПРАВОК. №4 ГЛАВНАЯ",
+      "match_ru": "^\\s*(?:вот\\s+)?\\d+\\s+[а-яё]+|\\bномер \\d+\\b|\\b(?:три|четыре|пять|семь|десять)(?:\\s+\\w+){1,3},?\\s+(?:которые|котор\\w+|каждый|без которых)\\b",
+      "template_kk": "{N} {нәрсе}, {нәтиже}. {k}-сін ешкім жасамайды.",
+      "example_kk": "Сақтауды екі есе көбейтетін 5 түзету. Төртіншісін ешкім жасамайды.",
+      "on_screen_kk": "5 ТҮЗЕТУ. №4 БАСТЫСЫ",
+      "match_kk": "^\\s*(?:міне,?\\s+)?\\d+\\s+\\w+|\\b(?:үш|төрт|бес|жеті|он)\\s+\\w+,?\\s+(?:күнде|әр|онсыз)\\b|\\b\\d+\\s+(?:құрал|қадам|кеңес|қате|себеп|кітап|сұрақ|түзету|әдіс)\\w*"
     },
     {
       "id": 12,
@@ -128,7 +216,15 @@
       "on_screen": "\"I HATE BEING ON CAMERA\"",
       "best_for": "Selling to the people who already said no once.",
       "trap": "Inventing the objection. Pull it verbatim from a DM or a comment, including the bad grammar.",
-      "match": "^\\s*[\\\"“'][^\\\"”']{5,120}[\\\"”'][,.]?\\s*(?:fine|ok|okay|sure|right|here)"
+      "match": "^\\s*[\\\"“'][^\\\"”']{5,120}[\\\"”'][,.]?\\s*(?:fine|ok|okay|sure|right|here)",
+      "template_ru": "«{Возражение, как его говорят}». Ладно. Вот версия, которая все равно работает.",
+      "example_ru": "«Я не хочу сниматься на камеру». Ладно. Вот формат без лица, который все равно продает.",
+      "on_screen_ru": "«НЕНАВИЖУ КАМЕРУ»",
+      "match_ru": "^\\s*[«\\\"“'][^»\\\"”']{5,120}[»\\\"”'][,.]?\\s*(?:окей|ок|ладно|хорошо|понимаю|согласен|согласна|вот|так)",
+      "template_kk": "«{Қарсылық, айтылғандай}». Жарайды. Міне, бәрібір жұмыс істейтін нұсқа.",
+      "example_kk": "«Камераға түскім келмейді». Жарайды. Міне, бетсіз де сататын формат.",
+      "on_screen_kk": "«КАМЕРАНЫ ЖЕК КӨРЕМІН»",
+      "match_kk": "^\\s*[«\\\"“'][^»\\\"”']{5,120}[»\\\"”'][,.]?\\s*(?:жарайды|жақсы|түсінемін|келісемін|міне|солай ма)"
     },
     {
       "id": 13,
@@ -138,7 +234,15 @@
       "on_screen": "MARCH  /  NOW",
       "best_for": "Anything visual. The cut between the two frames is the hook, the words are secondary.",
       "trap": "Three levers. Name one thing that changed or the transformation stops being believable.",
-      "match": "\\b(?:this|that) was\\b[^.!?]*[.!?]\\s*(?:this|that) is\\b|\\bbefore\\b[^.!?]*\\bafter\\b|\\bi (?:look|looked) back at\\b"
+      "match": "\\b(?:this|that) was\\b[^.!?]*[.!?]\\s*(?:this|that) is\\b|\\bbefore\\b[^.!?]*\\bafter\\b|\\bi (?:look|looked) back at\\b",
+      "template_ru": "{Как было}. {Как стало}. {Одна фраза о рычаге}.",
+      "example_ru": "Так выглядел мой профиль в марте. Так он выглядит сейчас. Я поменял только имя.",
+      "on_screen_ru": "МАРТ / СЕЙЧАС",
+      "match_ru": "\\b(?:это|так) (?:было|выглядел[аио]?)\\b[^.!?]*[.!?]\\s*(?:это|так)\\b|\\bдо\\b[^.!?]*\\bпосле\\b|\\bоглядываюсь назад\\b|\\bбыло\\b[^.!?]{0,40}\\bстало\\b",
+      "template_kk": "{Бұрын қалай еді}. {Қазір қалай}. {Не өзгерткенің, бір сөйлеммен}.",
+      "example_kk": "Наурызда профилім осындай еді. Қазір мынадай. Тек атымды өзгерттім.",
+      "on_screen_kk": "НАУРЫЗ / ҚАЗІР",
+      "match_kk": "\\bосындай еді\\b|\\b(?:дейін|бұрын)\\b[^.!?]*\\b(?:кейін)\\b|\\b\\w+да\\b[^.!?]{0,30}\\bеді\\b[^.!?]*[.!?]\\s*(?:қазір|енді)\\b"
     },
     {
       "id": 14,
@@ -148,7 +252,15 @@
       "on_screen": "PHOTOGRAPHERS UNDER $2K",
       "best_for": "Cutting a broad audience down to the one that converts. Send rate goes up because people tag each other.",
       "trap": "A group so large it is not a callout. 'Entrepreneurs' is not a group.",
-      "match": "^\\s*(?:every|all|any)\\s+\\w+|^\\s*[a-z][\\w ]{2,28}(?:ers|ists|ors|ants)\\b\\s*[,:]|^\\s*for (?:viewers|people|anyone|those|everyone)\\b|^\\s*(?:attention|listen up)\\b"
+      "match": "^\\s*(?:every|all|any)\\s+\\w+|^\\s*[a-z][\\w ]{2,28}(?:ers|ists|ors|ants)\\b\\s*[,:]|^\\s*for (?:viewers|people|anyone|those|everyone)\\b|^\\s*(?:attention|listen up)\\b",
+      "template_ru": "{Конкретная группа}, вот то, что вы обходите стороной.",
+      "example_ru": "Фотографы с чеком до 100 тысяч: вот страница с ценами, которую вы откладываете.",
+      "on_screen_ru": "ФОТОГРАФЫ ДО 100К ₸",
+      "match_ru": "^\\s*(?:все|каждый|каждая|любой)\\s+\\w+|^\\s*[а-яё]{4,}(?:тели|исты|ологи|еры|ки|ницы|ы)\\b[^.!?]{0,40}:|^\\s*(?:для тех,? кто|для всех,? кто|внимание)\\b",
+      "template_kk": "{Нақты топ}, бұл сендер айналып өтіп жүрген нәрсе.",
+      "example_kk": "Чегі 100 мыңнан төмен фотографтар, бұл сендер кейінге қалдырып жүрген баға парағы.",
+      "on_screen_kk": "100К ₸-ГЕ ДЕЙІНГІ ФОТОГРАФТАР",
+      "match_kk": "^\\s*(?:барлық|әрбір|кез келген)\\s+\\w+|\\b\\w+(?:лар|лер|дар|дер|тар|тер),\\s*(?:бұл|осы)\\b|^\\s*(?:назар аударыңыз|ата-аналар|кәсіпкерлер|мұғалімдер|студенттер)\\b"
     },
     {
       "id": 15,
@@ -158,7 +270,15 @@
       "on_screen": "47 FLOPS, THEN THIS",
       "best_for": "People at the start, which is most of the audience. High comment rate.",
       "trap": "Making the change sound like luck. If the answer is 'I got lucky', there is no video.",
-      "match": "\\bmy first\\s+\\d+\\b|\\bfirst\\s+\\d+\\s+(?:reels?|videos?|posts?|clients?|months?)\\b"
+      "match": "\\bmy first\\s+\\d+\\b|\\bfirst\\s+\\d+\\s+(?:reels?|videos?|posts?|clients?|months?)\\b",
+      "template_ru": "Мои первые {N} {попыток} не дали ничего. Вот что изменилось на {N+1}.",
+      "example_ru": "Мои первые 47 рилсов набирали по 300 просмотров. 48-й набрал 400 000. Отличалось одно.",
+      "on_screen_ru": "47 ПРОВАЛОВ, ПОТОМ ЭТО",
+      "match_ru": "\\bмо(?:и|й|я)\\s+перв\\w+\\s+\\d+\\b|\\bперв\\w+\\s+\\d+\\s+(?:рилс\\w*|видео|пост\\w*|клиент\\w*|месяц\\w*|карусел\\w*|продаж\\w*)\\b",
+      "template_kk": "Алғашқы {N} {талпынысым} ештеңе бермеді. {N+1}-де не өзгергенін айтайын.",
+      "example_kk": "Алғашқы 47 рилсім 300 қаралымнан аспады. 48-і 400 000 жинады. Бір ғана нәрсе басқа еді.",
+      "on_screen_kk": "47 СӘТСІЗДІК, СОСЫН МЫНА",
+      "match_kk": "\\b(?:алғашқы|бірінші)\\s+\\d+\\s+\\w+"
     },
     {
       "id": 16,
@@ -168,7 +288,15 @@
       "on_screen": "ASKED EVERY WEEK",
       "best_for": "Search. A question typed the way people type it is what Instagram search is matching against.",
       "trap": "Tidying the question up. The value is that it is in their words, typos and all.",
-      "match": "^\\s*[\\\"“']?(?:how|what|what'?s|why|when|where|who|which|can|should|do|does|did|is|are|have you|would you)\\b[^?]{3,110}\\?"
+      "match": "^\\s*[\\\"“']?(?:how|what|what'?s|why|when|where|who|which|can|should|do|does|did|is|are|have you|would you)\\b[^?]{3,110}\\?",
+      "template_ru": "«{Вопрос, дословно как его задали}?» Мне его задают каждую неделю.",
+      "example_ru": "«Как выкладывать регулярно и не возненавидеть это?» Мне этот вопрос задают каждую неделю.",
+      "on_screen_ru": "СПРАШИВАЮТ КАЖДУЮ НЕДЕЛЮ",
+      "match_ru": "^\\s*[«\\\"“']?(?:как|что|почему|зачем|когда|где|кто|какой|какая|какие|сколько|можно ли|стоит ли|нужно ли|правда ли|а если)\\b[^?]{3,110}\\?",
+      "template_kk": "«{Сұрақ, дәл қойылғандай}?» Мұны маған апта сайын сұрайды.",
+      "example_kk": "«Жеріне жеткізбей тұрақты пост салуды қалай үйренуге болады?» Мұны апта сайын сұрайды.",
+      "on_screen_kk": "АПТА САЙЫН СҰРАЙДЫ",
+      "match_kk": "^\\s*[«\\\"“']?(?:қалай|не|неге|неліктен|қашан|қайда|кім|қандай|қанша|неше)\\b[^?]{3,110}\\?|^[«\\\"“']?[^?]{3,110}\\b(?:ма|ме|ба|бе|па|пе|ше)\\?|^[«\\\"“']?[^?]{3,110}\\b(?:қалай|неге|қанша|қандай)\\b[^?]{0,40}\\?"
     },
     {
       "id": 17,
@@ -178,7 +306,15 @@
       "on_screen": "CAROUSELS vs REELS",
       "best_for": "Comments. People arrive already holding an opinion, which is the point.",
       "trap": "Refusing to pick. A comparison with a diplomatic ending is a video with no ending.",
-      "match": "\\b(?:vs\\.?|versus)\\b|\\bdifferences? between\\b|\\b(?:a|the) or (?:b|the)\\b"
+      "match": "\\b(?:vs\\.?|versus)\\b|\\bdifferences? between\\b|\\b(?:a|the) or (?:b|the)\\b",
+      "template_ru": "{A} против {Б}. Я делал оба {время}, и разрыв был огромный.",
+      "example_ru": "Карусели против рилсов. Я делал и то, и другое 90 дней, и разрыв был огромный.",
+      "on_screen_ru": "КАРУСЕЛИ VS РИЛСЫ",
+      "match_ru": "\\bvs\\.?\\b|\\bразниц\\w+ между\\b|^\\s*\\w+\\s+против\\s+\\w+\\s*[:?.]",
+      "template_kk": "{A} әлде {Б}? Екеуін де {уақыт} жасадым, айырмашылық үлкен.",
+      "example_kk": "Карусель әлде рилс? Екеуін де 90 күн жасадым, айырмашылық үлкен.",
+      "on_screen_kk": "КАРУСЕЛЬ VS РИЛС",
+      "match_kk": "\\bvs\\.?\\b|\\bайырмашылы\\w*|\\b\\w+\\s+(?:әлде|немесе)\\s+\\w+\\s*\\?|\\bқайсысы\\b[^.!?]*\\?"
     },
     {
       "id": 18,
@@ -188,7 +324,15 @@
       "on_screen": "WATCH THIS",
       "best_for": "Screen recordings and anything with a visible result. No setup at all, the hand is already moving.",
       "trap": "A result that takes twelve seconds to arrive. If the payoff is slow, cut to it and show the wait afterwards.",
-      "match": "^\\s*watch (?:what|this|me)\\b|^\\s*(?:let me|lemme) show you\\b|^\\s*repeat after me\\b"
+      "match": "^\\s*watch (?:what|this|me)\\b|^\\s*(?:let me|lemme) show you\\b|^\\s*repeat after me\\b",
+      "template_ru": "{Начни посреди действия.} Смотри, что будет.",
+      "example_ru": "Смотри, что будет, если вставить сюда подпись конкурента.",
+      "on_screen_ru": "СМОТРИ",
+      "match_ru": "^\\s*(?:смотри(?:те)?|посмотри(?:те)?|гляди)\\b,?\\s*(?:что|как|это)?|^\\s*(?:давай(?:те)? покажу|сейчас покажу|покажу на примере)\\b|^\\s*повторяй(?:те)? за мной\\b",
+      "template_kk": "{Әрекеттің ортасынан баста.} Қара, не болады.",
+      "example_kk": "Қара, бәсекелестің жазбасын осыған қойсам не болады.",
+      "on_screen_kk": "ҚАРА",
+      "match_kk": "^\\s*(?:қара|қараңыз|қараңыздар|көр|көріңіз)\\b|^\\s*(?:көрсетейін|қазір көрсетемін)\\b"
     },
     {
       "id": 19,
@@ -198,7 +342,15 @@
       "on_screen": "BEFORE YOU POST AGAIN",
       "best_for": "Urgency that is real. Platform changes, seasonal windows, policy updates.",
       "trap": "Manufactured urgency. One fake deadline and every future one is discounted.",
-      "match": "\\bbefore (?:you|it|they|the)\\b[^.!?]*\\b(?:change|changes|end|ends|close|closes|expires|goes)\\b|\\bchanges on\\b|\\bby 20\\d\\d\\b"
+      "match": "\\bbefore (?:you|it|they|the)\\b[^.!?]*\\b(?:change|changes|end|ends|close|closes|expires|goes)\\b|\\bchanges on\\b|\\bby 20\\d\\d\\b",
+      "template_ru": "{Что-то} меняется {когда}. Сделай {действие} до этого.",
+      "example_ru": "Обложки в сетке профиля обрезаются в ту же секунду, как ты выложишь рилс. Сначала поправь обложки.",
+      "on_screen_ru": "ДО СЛЕДУЮЩЕГО ПОСТА",
+      "match_ru": "\\bдо (?:\\d+\\s+)?(?:января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)|\\bдо конца (?:года|месяца|недели)\\b|\\bс \\d+\\s+(?:января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)\\b[^.!?]{0,30}\\b(?:меня\\w+|вступ\\w+|закрыва\\w+|отмен\\w+)|\\bк 20\\d\\d\\b|\\bпока не (?:поздно|закрыли|поменяли)\\b|\\bв ту же секунду,? как\\b|\\bдо (?:следующего|того,? как)\\b",
+      "template_kk": "{Бір нәрсе} {қашан} өзгереді. Оған дейін {әрекетті} жаса.",
+      "example_kk": "Рилс салған сәтте профиль торындағы мұқабалар кесіледі. Алдымен мұқабаларды түзе.",
+      "on_screen_kk": "КЕЛЕСІ ПОСТҚА ДЕЙІН",
+      "match_kk": "\\b\\d+\\s+(?:қаңтар|ақпан|наурыз|сәуір|мамыр|маусым|шілде|тамыз|қыркүйек|қазан|қараша|желтоқсан)\\w*[^.!?]{0,30}\\b(?:дейін|бастап|өзгереді|жабылады|аяқталады)\\b|\\b20\\d\\d\\s*(?:жылға|жылы)\\b[^.!?]{0,20}\\bдейін\\b|\\bкеш болмай тұрып\\b|\\b(?:салған|жариялаған)\\s+сәтте\\b|\\bоған дейін\\b"
     },
     {
       "id": 20,
@@ -208,7 +360,15 @@
       "on_screen": "YOU DON'T NEED A NICHE",
       "best_for": "Relief. Very high save rate, because it removes a blocker rather than adding a task.",
       "trap": "Removing the blocker and putting nothing in its place. The second half is the whole video.",
-      "match": "\\byou (?:do not|don'?t|dont) need\\b|\\bstop (?:trying to|worrying about)\\b"
+      "match": "\\byou (?:do not|don'?t|dont) need\\b|\\bstop (?:trying to|worrying about)\\b",
+      "template_ru": "Тебе не нужен {то, что якобы нужно всем}.",
+      "example_ru": "Тебе не нужна ниша. Тебе нужен один человек, которого ты можешь назвать по имени.",
+      "on_screen_ru": "НИША НЕ НУЖНА",
+      "match_ru": "\\b(?:тебе|вам) не (?:нужн\\w*|обязательно)\\b|\\bперестань (?:пытаться|переживать|бояться)\\b|\\bне нужно (?:быть|иметь)\\b",
+      "template_kk": "Саған {бәрі керек дейтін нәрсе} керек емес.",
+      "example_kk": "Саған ниша керек емес. Атын атай алатын бір адам керек.",
+      "on_screen_kk": "НИША КЕРЕК ЕМЕС",
+      "match_kk": "\\bкерек емес\\b|\\bқажет емес\\b|\\bміндетті емес\\b|\\b(?:уайымдауды|қорқуды|тырысуды) доғар\\w*"
     },
     {
       "id": 21,
@@ -218,7 +378,15 @@
       "on_screen": "HE ASKED FOR A REFUND",
       "best_for": "Stories. Starting mid-scene makes the viewer feel they arrived late, which is a reason to stay.",
       "trap": "Never going back to fill in the gap. Deliver the setup by second eight or it reads as a mistake.",
-      "match": "^\\s*(?:\\.\\.\\.|…)|^\\s*(?:and (?:that'?s|that is|then) when|so (?:he|she|they) (?:said|asked))\\b|^\\s*(?:uh|um)\\b"
+      "match": "^\\s*(?:\\.\\.\\.|…)|^\\s*(?:and (?:that'?s|that is|then) when|so (?:he|she|they) (?:said|asked))\\b|^\\s*(?:uh|um)\\b",
+      "template_ru": "{...и вот тогда {поворот}.}",
+      "example_ru": "...и тут клиент просит вернуть деньги. Через три дня после того, как все согласовал.",
+      "on_screen_ru": "ОН ПОПРОСИЛ ВОЗВРАТ",
+      "match_ru": "^\\s*(?:\\.\\.\\.|…)|^\\s*(?:и (?:тут|тогда|вот)|а (?:потом|тут)|так вот|и он (?:говорит|сказал)|и она (?:говорит|сказала))\\b|^\\s*(?:эм|ээ|ну вот)\\b",
+      "template_kk": "{...сосын {бұрылыс}.}",
+      "example_kk": "...сосын клиент ақшасын қайтаруды сұрады. Бәрін бекіткеннен кейін үш күн өткенде.",
+      "on_screen_kk": "ОЛ АҚШАСЫН ҚАЙТАРУДЫ СҰРАДЫ",
+      "match_kk": "^\\s*(?:\\.\\.\\.|…)|^\\s*(?:сосын|содан кейін|сөйтсем|сөйтті де|сонда ол|ал ол)\\b|^\\s*(?:ээ|әә|мм)\\b"
     },
     {
       "id": 22,
@@ -228,7 +396,15 @@
       "on_screen": "NICE GUYS FINISH FIRST",
       "best_for": "Comments. The viewer has to stop and check whether they misheard you.",
       "trap": "Flipping a saying nobody says. The original has to be a reflex, or the inversion is just a sentence.",
-      "match": "^\\s*[A-Za-z][\\w' ]{2,34}\\b(?:finish|finishes|win|wins|lose|loses|beats?|is|are)\\s+(?:first|last|dead|wrong|right|better|overrated|underrated)\\b"
+      "match": "^\\s*[A-Za-z][\\w' ]{2,34}\\b(?:finish|finishes|win|wins|lose|loses|beats?|is|are)\\s+(?:first|last|dead|wrong|right|better|overrated|underrated)\\b",
+      "template_ru": "{Известная фраза наоборот.}",
+      "example_ru": "Хорошие парни приходят первыми.",
+      "on_screen_ru": "ХОРОШИЕ ПАРНИ ПЕРВЫЕ",
+      "match_ru": "^\\s*[\\w\\s-]{2,40}\\b(?:переоцен\\w*|недооцен\\w*|не работа\\w*|мертв\\w*|умер\\w*|устарел\\w*|бесполезн\\w*|вредн\\w*|приход\\w* первы\\w*|приход\\w* последн\\w*)|^\\s*вс[её]\\s+(?:врут|ошибаются)\\b",
+      "template_kk": "{Белгілі сөз, керісінше.}",
+      "example_kk": "Жақсы жігіттер бірінші келеді.",
+      "on_screen_kk": "ЖАҚСЫ ЖІГІТТЕР БІРІНШІ",
+      "match_kk": "^\\s*[\\w\\s-]{2,40}\\b(?:жұмыс істемейді|өлді|ескірді|пайдасыз|бағасы асырылған|артық бағаланған|бірінші келеді|соңғы келеді)\\b|^\\s*бәрі\\s+(?:қателеседі|өтірік айтады)\\b"
     },
     {
       "id": 23,
@@ -238,7 +414,15 @@
       "on_screen": "33% NEVER READ AGAIN",
       "best_for": "Sends. A number a person can repeat at dinner gets sent to somebody.",
       "trap": "A statistic you cannot source. Say where it came from in the video or do not use it.",
-      "match": "^\\s*\\d[\\d,.]*\\s?%|\\b\\d[\\d,.]*\\s?%\\s+of\\b"
+      "match": "^\\s*\\d[\\d,.]*\\s?%|\\b\\d[\\d,.]*\\s?%\\s+of\\b",
+      "template_ru": "{N}% {группы} {неожиданный факт}.",
+      "example_ru": "{{твоя цифра}}% подписчиков ни разу не открывали ссылку в шапке.",
+      "on_screen_ru": "{{N}}% НЕ ОТКРЫВАЛИ",
+      "match_ru": "^\\s*(?:\\d[\\d,.]*|\\{\\{[^}]+\\}\\})\\s?%|\\b\\d[\\d,.]*\\s?%\\s+(?:из|всех|людей|тех)\\b|\\b\\d+\\s+из\\s+\\d+\\b",
+      "template_kk": "{Топтың} {N}%-ы {күтпеген факт}.",
+      "example_kk": "Жазылушылардың {{өз саның}}%-ы профильдегі сілтемені бір рет те ашпаған.",
+      "on_screen_kk": "{{N}}% АШПАҒАН",
+      "match_kk": "(?:\\d[\\d,.]*|\\{\\{[^}]+\\}\\})\\s?%-?(?:ы|і|ын|ін)?(?:\\s|$|[.,])|\\b\\d+\\s*адамның\\s+\\d+\\b"
     },
     {
       "id": 24,
@@ -248,7 +432,15 @@
       "on_screen": "THE NEW ONE",
       "best_for": "Anything physical or visual. The object is the hook and the words are captions on it.",
       "trap": "Holding the thing up without saying what it changes. A reveal with no stake is an advert.",
-      "match": "^\\s*(?:so,?\\s+)?(?:this|these|here) (?:is|are)\\s+(?:the\\s+)?(?:new|my new)\\b|^\\s*(?:so,?\\s+)?this (?:new|tiny|little)\\b|^\\s*this \\w+ has (?:the|a)\\b"
+      "match": "^\\s*(?:so,?\\s+)?(?:this|these|here) (?:is|are)\\s+(?:the\\s+)?(?:new|my new)\\b|^\\s*(?:so,?\\s+)?this (?:new|tiny|little)\\b|^\\s*this \\w+ has (?:the|a)\\b",
+      "template_ru": "Это новый {X}.",
+      "example_ru": "Это новая версия нашего приложения, и в ней исправлено то, что меня бесило.",
+      "on_screen_ru": "НОВАЯ ВЕРСИЯ",
+      "match_ru": "^\\s*(?:итак,?\\s+)?(?:это|вот)\\s+(?:(?:мой|моя|мое|моё|мои|наш|наша|наше|наши)\\s+)?нов\\w+\\b|^\\s*(?:этот|эта|это)\\s+(?:маленьк\\w+|крошечн\\w+|нов\\w+)\\b|^\\s*(?:знакомьтесь|представляю)\\b",
+      "template_kk": "Бұл жаңа {X}.",
+      "example_kk": "Міне, біздің жаңа құрал. Мені ашуландыратын бір нәрсені түзейді.",
+      "on_screen_kk": "ЖАҢА ҚҰРАЛ",
+      "match_kk": "^\\s*(?:міне|бұл|мынау),?\\s+(?:(?:менің|біздің)\\s+)?жаңа\\b|^\\s*(?:таныс болыңыз|таныстырамын)\\b"
     },
     {
       "id": 25,
@@ -258,7 +450,15 @@
       "on_screen": "1M SUBS IN ONE MONTH",
       "best_for": "Proof when the user does not have their own number yet. Third-person is allowed if it is true.",
       "trap": "No name and no link. An anonymous miracle is a rumour.",
-      "match": "\\bthere (?:was|is) (?:one|a|this)\\b|\\b(?:one|a) (?:guy|girl|creator|student|founder|kid|client|friend) (?:i know |who |that )(?:\\w+ed|grew|made|built|went|took|got|hit)\\b|\\bwe had a new\\b"
+      "match": "\\bthere (?:was|is) (?:one|a|this)\\b|\\b(?:one|a) (?:guy|girl|creator|student|founder|kid|client|friend) (?:i know |who |that )(?:\\w+ed|grew|made|built|went|took|got|hit)\\b|\\bwe had a new\\b",
+      "template_ru": "Был один {человек}, который {результат} за {время}.",
+      "example_ru": "Был один автор, который набрал миллион подписчиков за месяц.",
+      "on_screen_ru": "1 МЛН ЗА МЕСЯЦ",
+      "match_ru": "\\bбыл[аи]? (?:одна|один|такой|такая)\\b|\\b(?:один|одна|мой|моя|наш|наша)\\s+(?:клиент\\w*|учени\\w*|знаком\\w*|друг|подруга|студент\\w*|предпринимател\\w*|блогер\\w*|автор\\w*)\\b[^.!?]{0,40}\\b\\w+(?:л|ла|ли)\\b|\\bу нас был[аи]? (?:нов\\w+|одна|один)\\b",
+      "template_kk": "Бір {адам} болды, ол {уақытта} {нәтижеге} жетті.",
+      "example_kk": "Бір блогер болды, ол бір айда миллион жазылушы жинады.",
+      "on_screen_kk": "БІР АЙДА 1 МЛН",
+      "match_kk": "\\bбір\\s+\\w+\\s+болды\\b|\\b(?:бір|біздің|менің)\\s+(?:клиент\\w*|оқушы\\w*|танысым|досым|студент\\w*|кәсіпкер\\w*|блогер\\w*|шәкірт\\w*)\\b[^.!?]{0,50}\\b\\w+(?:ды|ді|ты|ті)\\b"
     },
     {
       "id": 26,
@@ -268,7 +468,15 @@
       "on_screen": "THE FASTEST WAY",
       "best_for": "One-claim videos with no story attached. It is the most common shape in the wild and the easiest to write badly.",
       "trap": "A superlative with a soft answer. If the second half is 'consistency', you have said nothing and the comments will tell you.",
-      "match": "^\\s*(?:the\\s+)?(?:fastest|quickest|best|worst|biggest|greatest|easiest|hardest|only|number one|#1|most important)\\s+\\w+|\\bthe (?:fastest|best|worst|biggest|greatest|only) way to\\b"
+      "match": "^\\s*(?:the\\s+)?(?:fastest|quickest|best|worst|biggest|greatest|easiest|hardest|only|number one|#1|most important)\\s+\\w+|\\bthe (?:fastest|best|worst|biggest|greatest|only) way to\\b",
+      "template_ru": "Самый {быстрый / большой / единственный} {способ} это {ответ}.",
+      "example_ru": "Самый быстрый способ стать увереннее это накопить доказательства, с которыми не поспоришь.",
+      "on_screen_ru": "САМЫЙ БЫСТРЫЙ СПОСОБ",
+      "match_ru": "^\\s*(?:сам(?:ый|ая|ое|ые)\\s+\\w+|лучший|лучшая|худший|худшая|единственн\\w+|главн\\w+|номер один|№\\s?1)\\b|\\b(?:самый|единственный|лучший)\\s+(?:быстрый\\s+|простой\\s+|дешевый\\s+|дешёвый\\s+)?способ\\b",
+      "template_kk": "{Нәрсенің} ең {жылдам / үлкен / жалғыз} жолы {жауап}.",
+      "example_kk": "Сенімді болудың ең жылдам жолы: дауласуға келмейтін дәлел жинау.",
+      "on_screen_kk": "ЕҢ ЖЫЛДАМ ЖОЛ",
+      "match_kk": "^\\s*ең\\s+\\w+|\\bең\\s+(?:жылдам|оңай|тиімді|арзан|жақсы|үлкен|басты|қарапайым)\\s+(?:жолы|тәсілі|әдісі)\\b|\\bжалғыз\\s+(?:жолы|тәсілі)\\b|^\\s*№\\s?1\\b"
     }
   ],
   "classify_order": [

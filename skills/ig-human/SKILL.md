@@ -1,111 +1,89 @@
 ---
 name: ig-human
 description: >-
-  Strip the machine fingerprint out of any draft - em dashes, AI slop words,
-  invisible watermark characters - and score it against a five-check detection
-  panel before it goes out. Use whenever text needs to sound human, when the
-  user says humanize, "does this sound like AI", "remove the em dashes",
-  "de-slop this", "this sounds like ChatGPT", or before any caption, script,
-  comment, reply or DM is shown to the user.
+  Очеловечивает текст для Instagram на русском, казахском или английском: скрипт
+  убирает длинные тире, ИИ-штампы, невидимые символы и «ё», потом текст
+  переписывается по правилам human-voice-rewrite и проверяется пятью метриками.
+  Используй, когда просят «очеловечь», «звучит как ИИ», «убери тире», «перепиши
+  как человек», «адамша жаз», «humanize», «de-slop», и всегда перед тем, как
+  показать пользователю подпись, сценарий, комментарий, ответ или директ из
+  других скиллов ig-*.
 ---
 
 # ig-human
 
-Two tools live in this folder and they both actually run. Use them. Do not
-eyeball this.
+Три шага, и ни один не делается на глаз:
+
+1. **Механика.** `humanize.py` чистит то, что можно исправить без понимания смысла.
+2. **Переписка.** Ты переписываешь текст по `human-voice-rewrite.md`: это отдельный скилл автора форка, подключенный сюда целиком.
+3. **Проверка.** `detect.py` ставит оценку до и после.
 
 ```bash
-python3 humanize.py draft.txt --report        # clean it, show what changed
-python3 detect.py draft.txt                    # score it, five checks
-python3 detect.py before.txt after.txt         # prove the delta
+python3 humanize.py draft.txt -o clean.txt --report
+python3 detect.py draft.txt clean.txt
 ```
 
-Both read `slop.json`: 154 stock words and phrases with plain-English
-replacements, 18 invisible character classes, 11 typographic substitutions and
-16 structural tells. The last block of each list is Instagram-specific, the
-vocabulary that only shows up in captions and voiceovers. It is meant to be
-edited. If the user has a word they always use that the lexicon strips, take it
-out of the file.
+## Язык
 
-## Why this matters more on Instagram than it looks
+Скрипты сами определяют язык текста: en, ru или kk. Общие правила обоих языков (ё, тире, «ЖИ», ₸, ключевые слова, что проверено) лежат в `ru-kk.md`. Отчеты пользователю пиши по-русски.
 
-Captions are short and scripts get said out loud. A written-sounding line in a
-600-character caption is a larger share of the text than the same line in an
-essay, and a voiceover that nobody could say naturally is obvious in the first
-take. The tell here is not a detector flagging the post. The tell is a person
-scrolling past something that reads like a brand, or a creator stumbling over
-their own script.
+## Шаг 1. humanize.py
 
-## What gets fixed automatically
+Скрипт сам исправляет:
 
-**1. Invisible characters.** Zero-width spaces and joiners, word joiners, soft
-hyphens, byte-order marks, Unicode tag characters, invisible separators,
-non-breaking and narrow spaces. A keyboard does not produce these. They survive
-copy-paste, they are invisible in every editor, and they are the most
-mechanical thing in generated text. `humanize.py` deletes every one, including
-any remaining Unicode format character it does not have a name for.
+- **Невидимые символы**: zero-width, мягкие переносы, BOM, неразрывные пробелы.
+- **Типографику.** Длинное тире заменяется запятой, а в русском и казахском «X — это Y» становится «X это Y». Тире в начале строки (список, реплика) остается. «ё» становится «е». Кавычки-лапки и многоточие-символ заменяются на прямые кавычки и три точки. Стрелка «->» ставится только внутри строки, а «→» в конце строки остается, потому что в каруселях это формат.
+- **Штампы, которые не склоняются**: 154 английских, плюс русские и казахские из `slop.json`. Например, «в современном мире» становится «сейчас», а «стоит отметить, что» и «қорыта айтқанда» в начале предложения удаляются. «ИИ» в казахском тексте меняется на «ЖИ».
 
-**2. Typography.** Em dash to comma, en dash to hyphen, curly quotes to
-straight, ellipsis to three dots, bullet character to hyphen. The em dash pass
-is the one that matters: it collapses the dash to a comma and then cleans up
-the double punctuation and orphaned periods that leaves behind.
+Скрипт только помечает, а исправлять тебе:
 
-**3. The slop lexicon.** delve, leverage, robust, seamless, crucial, testament
-to, "in today's fast-paced world", plus the Instagram block: "stop scrolling",
-"in today's video", "follow for more", "tag someone who needs this", "the
-algorithm loves", "run don't walk". Each swapped for a plain word or deleted,
-with capitalisation preserved and URLs left untouched.
+- **3b. STOCK WORDS**: штампы, которые склоняются («играет ключевую роль», «является», «болып табылады», «кешенді тәсіл»). Регулярка сломала бы падеж, поэтому переписывай руками по подсказке в отчете.
+- **4. STRUCTURAL TELLS**: «не X, а Y», «бұл жай ғана X емес», тройки, риторический вопрос с ответом, ИИ-зачины, «в этом видео», дежурные призывы, «и тогда я понял», ссылки на «многих экспертов», ровная длина предложений.
+- **Список «was:» под тире.** Скрипт заменил каждое тире запятой и показал, где оно стояло. Если тире было грамматическим («Алматы — ең үлкен қала»), перестрой фразу через двоеточие, глагол или два предложения.
 
-## What does NOT get fixed automatically
+Слова, которые пользователь говорит сам, из `slop.json` можно убрать: файл для того и сделан, чтобы его править.
 
-Structural tells get **flagged, not rewritten**, because changing the shape of
-a sentence needs judgement:
+## Шаг 2. Переписать по human-voice-rewrite
 
-- "It's not just X, it's Y" and "not only X but also Y"
-- Rule-of-three triads
-- Rhetorical one-word question lines: "The result?"
-- The video preamble: "in this video I'm going to show you"
-- Emoji bullet lists
-- Three or more shouted words in a row
-- Hashtag walls
-- Reflex bait: "follow for more", "tag someone who", "double tap if"
+Прочитай `human-voice-rewrite.md` и выполни его порядок работы на тексте после шага 1. Что брать из скилла, зависит от формата:
 
-That list is your job. Rewrite each flagged line by hand, keeping the meaning,
-then re-run `detect.py`. This is the part that moves the score from REVIEW to
-PASS, and it is the part a script cannot do.
-
-## The five checks
-
-`detect.py` scores five signals 0-100, higher is more human:
-
-| check | what it measures | machine looks like |
+| формат | слой 1 | слой 2 |
 | --- | --- | --- |
-| BURSTINESS | sentence-length variation | every sentence the same length |
-| SPECIFICITY | numbers, names, concrete markers per 100 words | abstract nouns, no figures |
-| SLOP DENSITY | lexicon hits per 100 words | stock vocabulary |
-| FINGERPRINT | invisible chars, em dashes, curly quotes per 1k chars | typographically perfect |
-| VOICE | contractions, person, structural tells | no contractions, staged reveals |
+| подпись, комментарий, ответ, директ | весь | пункты 1, 2, 5 |
+| сценарий рилса | весь | пункты 1, 2, 5, 8; каждую фразу должно быть можно сказать вслух без репетиции |
+| текст слайдов карусели | весь, кроме капса на обложке и «→» в конце | пункты 2, 10 |
+| длинный пост, статья, лид-магнит | весь | весь |
 
-The verdict weights the mean at 60% and the **weakest single check** at 40%,
-because one signal is enough. PASS needs an overall of 70+ with no check
-below 55.
+Обязательно закрой все пункты из 3b и 4 отчета.
 
-## Say this honestly
+Для казахского текста скилл написан на русских примерах, но правила те же. Казахские штампы и кальки перечислены в `ru-kk.md`.
 
-These are five local heuristics modelled on the signals public detectors key
-on. They run entirely on the user's machine and nothing is uploaded. They are
-**not** GPTZero, Originality, Copyleaks, Winston or Turnitin, they do not call
-those APIs, and they cannot promise those verdicts. Fixing what they measure
-does tend to move those numbers, because they are measuring the same underlying
-things. That is the claim. Do not make a bigger one on the user's behalf, and
-do not tell a user their text is undetectable.
+**Где правила Instagram важнее human-voice-rewrite:**
 
-## Order of operations
+- Хэштеги (до пяти, отдельной строкой внизу подписи) и призыв с ключевым словом капсом остаются, хотя скилл убирает хэштеги, которых не было у автора.
+- Если в проекте есть свой формат каруселей, он главнее. Типичные приемы такого формата: капс на обложке, «→» в конце слайда, переходы вроде «Но это не все →», списки через «—». Скрипт помечает такие переходы, но в карусели их не трогай.
+- Ни фактов, ни личных историй не добавляй, это правило у обоих скиллов общее. Нужна цифра, которой нет, ставь `{{твоя цифра}}`.
 
-1. `humanize.py draft.txt -o clean.txt --report`
-2. Read the structural flags. Rewrite those lines yourself.
-3. `detect.py draft.txt clean.txt` to show the before and after.
-4. If the verdict is not PASS, fix the weakest check named in the output and go
-   again. Two rounds is normal. Five means the draft was written by formula,
-   and the fix is a different draft, not more passes.
-5. Show the user the cleaned text and the score. Never the score alone.
+## Шаг 3. detect.py
+
+Скрипт ставит оценку от 0 до 100 по пяти проверкам. Чем выше, тем текст человечнее.
+
+| проверка | что меряет | как выглядит машинный текст |
+| --- | --- | --- |
+| BURSTINESS | разброс длины предложений | все предложения одной длины |
+| SPECIFICITY | цифры и имена на 100 слов | абстракции без цифр |
+| SLOP DENSITY | штампы из словаря на 100 слов | готовые обороты |
+| FINGERPRINT | невидимые символы, тире, лапки на 1000 знаков | типографски идеальный текст |
+| VOICE | en: сокращения (don't); ru и kk: разговорные частицы («же», «ведь», «ғой», «қой»); местоимения и личные окончания; конструкции из шага 1 | ни одной частицы, ни одного «я» и «ты» |
+
+Итог считается так: 60% среднего плюс 40% самой слабой проверки. PASS дается при 70 и выше, если ни одна проверка не ниже 55. Не PASS: чини слабейшую проверку и прогоняй снова. Два круга это нормально. Пять кругов значит, что текст написан по формуле и нужен другой черновик.
+
+## Вывод
+
+Как в human-voice-rewrite: сначала только готовый текст, без вступлений. Потом не больше трех строк: что существенно изменено и 1-3 места, где автору стоит добавить свою деталь. Последней строкой оценка, например «детектор: 31 -> 78 PASS». Одну оценку без текста не показывай.
+
+## Честно
+
+Это пять локальных эвристик, а не GPTZero, Originality или Turnitin. Скрипты ничего никуда не отправляют и не обещают вердикт этих сервисов. Пороги для русского и казахского подобраны по правилам языка и не проверены на корпусе. Никогда не говори пользователю, что текст «не определится как ИИ».
+
+Пак собран из MIT-репозитория Jakeschincariol/instagram-agent-skill (лицензия в `LICENSE`) и адаптирован под ru/kk 2026-10-30 в форке https://github.com/kanatuxya/instagram-agent-skill-ru-kk.

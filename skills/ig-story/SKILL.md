@@ -1,14 +1,17 @@
 ---
 name: ig-story
 description: >-
-  Write the day's Instagram Stories - the frame-by-frame sequence, which
-  stickers to use where, and the one that moves people into the DMs. Use when
-  the user says "stories", "what do I post on my story", "story sequence",
-  "poll idea", "I have nothing to story about", or wants to sell something
-  without making a post about it.
+  Сторис на день в Instagram: последовательность кадров, какие стикеры где
+  ставить и какой из них уводит в Директ. Используй, когда просят «сторис»,
+  «что выложить в сторис», «идея для опроса», «не о чем снимать сторис»,
+  «сторис жаса», или нужно продать без отдельного поста. Stories.
 ---
 
 # ig-story
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
 
 Stories are not a smaller feed. The feed is how strangers find you. Stories are
 how the people who already follow you decide whether you are a person worth
