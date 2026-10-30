@@ -31,13 +31,40 @@ import unicodedata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LEX = os.path.join(HERE, "slop.json")
+sys.path.insert(0, HERE)
+from humanize import (detect_lang, entry_pattern, structure_applies,  # noqa: E402
+                      word_entry_applies)
 
 SENT_RE = re.compile(r"[^.!?\n]+[.!?]*")
-WORD_RE = re.compile(r"[A-Za-z']+")
+WORD_RE = re.compile(r"[^\W\d_]+(?:['’][^\W\d_]+)*")
 CONTRACTIONS = re.compile(r"\b\w+'(?:s|t|re|ve|ll|d|m)\b", re.IGNORECASE)
 PRONOUNS = re.compile(r"\b(i|me|my|mine|we|us|our|you|your)\b", re.IGNORECASE)
 NUMBERS = re.compile(r"\b\d[\d,.]*%?\b|\$\d")
-PROPER = re.compile(r"(?<![.!?]\s)(?<!^)\b[A-Z][a-z]{2,}\b", re.MULTILINE)
+PROPER = re.compile(r"(?<![.!?]\s)(?<!^)\b[A-ZА-ЯЁӘҒҚҢӨҰҮҺІ][a-zа-яёәғқңөұүһі]{2,}\b", re.MULTILINE)
+
+# Russian and Kazakh have no contractions. What a written-by-formula text lacks
+# there instead is the spoken particle: "же", "ведь", "ну" / "ғой", "қой", "енді".
+PARTICLES = {
+    "ru": re.compile(r"\b(?:же|ведь|вот|ну|прям|типа|короче|кстати|вообще|реально|честно"
+                     r"|блин|ага|вроде|кажется|походу|наверное|ладно|слушай|смотри)\b",
+                     re.IGNORECASE),
+    "kk": re.compile(r"\b(?:ғой|қой|ше|ау|енді|әйтеуір|сосын|жә|міне|тіпті|мүлде|шынымен"
+                     r"|әне|ой|иә|ия|расында|білесің бе|қарашы)\b", re.IGNORECASE),
+}
+# Kazakh drops the pronoun and puts the person on the verb, so count the
+# endings too: "бардым", "жазамыз", "білесіз".
+PERSON = {
+    "ru": (re.compile(r"\b(?:я|меня|мне|мной|мой|моя|мое|моё|мои|моих|моим|мы|нас|нам|нами"
+                      r"|наш|наша|наше|наши|наших|ты|тебя|тебе|тобой|твой|твоя|твое|твоё|твои"
+                      r"|твоих|вы|вас|вам|вами|ваш|ваша|ваше|ваши|ваших)\b", re.IGNORECASE),
+           6.0),
+    "kk": (re.compile(r"\b(?:менің|маған|мені|менде|менен|менімен|біз|біздің|бізге|бізді|бізде"
+                      r"|бізден|бізбен|сен|сенің|саған|сені|сенде|сенен|сенімен|сіз|сіздің"
+                      r"|сізге|сізді|сізде|сізден|сізбен|сендер|сіздер|сіздерге|сендерге)\b"
+                      r"|\b[^\W\d_]{2,}(?:мын|мін|бын|бін|пын|пін|дым|дім|тым|тім|мыз|міз"
+                      r"|быз|біз|пыз|піз|сың|сің|сыз|сіз|ңыз|ңіз)\b", re.IGNORECASE),
+           8.0),
+}
 
 
 def clamp(n):
@@ -82,16 +109,16 @@ def check_specificity(text):
     return score, f"{hits} concrete markers, {density:.1f} per 100 words (want 4+)"
 
 
-def check_slop(text, lex):
+def check_slop(text, lex, lang="en"):
     """Stock vocabulary density against the lexicon."""
     w = words(text)
     if not w:
         return 50.0, "empty"
     hits, found = 0, []
     for entry in lex["words"] + lex["phrases"]:
-        pattern = re.compile(r"\b" + re.escape(entry["find"]).replace(r"\ ", r"\s+") + r"\b",
-                             re.IGNORECASE)
-        n = len(pattern.findall(text))
+        if not word_entry_applies(entry, lang):
+            continue
+        n = sum(1 for _ in entry_pattern(entry).finditer(text))
         if n:
             hits += n
             found.append(entry["find"])
@@ -106,7 +133,8 @@ def check_slop(text, lex):
 def check_fingerprint(text):
     """Characters a phone keyboard does not produce."""
     invisible = sum(1 for c in text if unicodedata.category(c) == "Cf")
-    em = text.count("—")
+    # A dash opening a line is a list marker or dialogue, not the tell.
+    em = text.count("—") - len(re.findall(r"(?m)^[ \t]*—", text))
     curly = sum(text.count(c) for c in "‘’“”")
     ellip = text.count("…")
     nbsp = sum(text.count(c) for c in "   ")
@@ -118,17 +146,27 @@ def check_fingerprint(text):
     return score, detail
 
 
-def check_voice(text, lex):
-    """Contractions, person, and the shapes models default to."""
+def check_voice(text, lex, lang="en"):
+    """Contractions (or spoken particles), person, and the shapes models default to."""
     w = words(text)
     if len(w) < 25:
         return 50.0, "too short to judge"
     per100 = 100 / len(w)
-    contractions = len(CONTRACTIONS.findall(text)) * per100
-    person = len(PRONOUNS.findall(text)) * per100
+    if lang in PARTICLES:
+        contractions = len(PARTICLES[lang].findall(text)) * per100
+        person_re, person_human = PERSON[lang]
+        person = len(person_re.findall(text)) * per100
+        spoken, spoken_human = "spoken particles", 2.0
+    else:
+        contractions = len(CONTRACTIONS.findall(text)) * per100
+        person = len(PRONOUNS.findall(text)) * per100
+        person_human = 8.0
+        spoken, spoken_human = "contractions", 3.0
     tells = 0
     names = []
     for s in lex["structures"]:
+        if not structure_applies(s, lang):
+            continue
         try:
             n = len(re.compile(s["regex"], re.MULTILINE).findall(text))
         except re.error:
@@ -138,13 +176,13 @@ def check_voice(text, lex):
             names.append(s["id"])
     bullets = [len(b.split()) for b in re.findall(r"(?m)^\s*[-*•]\s+(.+)$", text)]
     uniform = (len(bullets) >= 3 and statistics.pstdev(bullets) < 1.6)
-    score = (scale(contractions, human=3.0, machine=0.0) * 0.35
-             + scale(person, human=8.0, machine=1.0) * 0.35
+    score = (scale(contractions, human=spoken_human, machine=0.0) * 0.35
+             + scale(person, human=person_human, machine=1.0) * 0.35
              + clamp(100 - tells * 22) * 0.30)
     if uniform:
         score -= 12
         names.append("uniform-bullets")
-    detail = (f"{contractions:.1f} contractions, {person:.1f} personal pronouns "
+    detail = (f"{contractions:.1f} {spoken}, {person:.1f} personal pronouns "
               f"per 100 words, {tells} structural tell(s)")
     if names:
         detail += " [" + ", ".join(names[:4]) + "]"
@@ -154,13 +192,14 @@ def check_voice(text, lex):
 CHECKS = ["BURSTINESS", "SPECIFICITY", "SLOP DENSITY", "FINGERPRINT", "VOICE"]
 
 
-def run(text, lex):
+def run(text, lex, lang=None):
+    lang = lang or detect_lang(text)
     results = {}
     results["BURSTINESS"] = check_burstiness(text)
     results["SPECIFICITY"] = check_specificity(text)
-    results["SLOP DENSITY"] = check_slop(text, lex)
+    results["SLOP DENSITY"] = check_slop(text, lex, lang)
     results["FINGERPRINT"] = check_fingerprint(text)
-    results["VOICE"] = check_voice(text, lex)
+    results["VOICE"] = check_voice(text, lex, lang)
     scores = [results[c][0] for c in CHECKS]
     # The weakest check drags the verdict: a detector only needs one signal.
     overall = statistics.mean(scores) * 0.6 + min(scores) * 0.4
@@ -196,6 +235,7 @@ def main():
     ap.add_argument("compare", nargs="?", help="second file, to show before/after")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--lexicon", default=LEX)
+    ap.add_argument("--lang", choices=["en", "ru", "kk"], help="skip detection")
     args = ap.parse_args()
 
     lex = json.load(open(args.lexicon, encoding="utf-8"))
@@ -207,7 +247,7 @@ def main():
 
     payload = []
     for name, text in targets:
-        results, overall, verdict = run(text, lex)
+        results, overall, verdict = run(text, lex, args.lang)
         payload.append({
             "source": name,
             "checks": {k: {"score": round(v[0], 1), "detail": v[1]} for k, v in results.items()},
@@ -220,7 +260,7 @@ def main():
         return
 
     for (name, text), p in zip(targets, payload):
-        results, overall, verdict = run(text, lex)
+        results, overall, verdict = run(text, lex, args.lang)
         render(results, overall, verdict, label=os.path.basename(name) if args.compare else None)
     if args.compare:
         a, b = payload

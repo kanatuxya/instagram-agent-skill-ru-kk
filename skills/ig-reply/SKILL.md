@@ -1,13 +1,18 @@
 ---
 name: ig-reply
 description: >-
-  Handle the comments under the user's own reels and posts - draft replies to
-  the ones worth answering, sorted by which ones are. Use when the user pastes
-  their comments, says "reply to these", "handle my comments", "someone said X
-  on my reel", or is dealing with a critic, a hater or a lead in the comments.
+  Ответы на комментарии под своими рилсами и постами в Instagram,
+  отсортированные по тому, на какие стоит отвечать. Используй, когда
+  пользователь присылает комментарии и просит «ответь на комменты», «что
+  ответить», «пікірлерге жауап бер», или разбирается с критиком, хейтером или
+  лидом. Reply to comments.
 ---
 
 # ig-reply
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
 
 The comment thread under your own post is where reach is decided. Every reply
 is another interaction on the post, replies arriving in the first hour do most

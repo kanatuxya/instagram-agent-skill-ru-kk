@@ -21,13 +21,21 @@ not tell you which of two decent hooks will travel, and nothing that reads text
 can, because that is decided by your face, your edit, your audio and who
 Instagram shows it to. Trust the retention graph over this script.
 
+Russian and Kazakh hooks are scored on the same five properties with their own
+word lists, and length is timed in syllables rather than words, because a
+Kazakh word can carry what takes four English ones. The ru/kk lists were not
+part of the 74-hook test above: treat their scores as the same kind of filter,
+with less evidence behind it.
+
 Each check returns 0 to 100. Higher is better.
 
 Usage
   python3 hookscore.py hooks.txt              # one hook per line, ranked
   python3 hookscore.py --hook "I lost $18,000 on one missing contract."
+  python3 hookscore.py --hook "Шарттағы бір тармақ маған 1,8 млн теңгеге түсті."
   pbpaste | python3 hookscore.py -
   python3 hookscore.py hooks.txt --json
+  python3 hookscore.py hooks.txt --lang ru    # skip detection
 """
 
 import argparse
@@ -36,14 +44,14 @@ import re
 import statistics
 import sys
 
-WORD_RE = re.compile(r"[A-Za-z0-9$%'’-]+")
+WORD_RE = re.compile(r"[\w$%₸'’-]+")
 NUMBER_RE = re.compile(
     r"\$\s?\d[\d,]*(?:\.\d+)?"                       # money, whole
     r"|\b\d[\d,]*(?:\.\d+)?\s?"                      # a figure, with or
     r"(?:%|k\b|x\b|hrs?\b|hours?\b|mins?\b|minutes?\b"  # without a unit
     r"|days?\b|weeks?\b|months?\b|years?\b)?",
     re.IGNORECASE)
-PROPER_RE = re.compile(r"(?<!^)\b[A-Z][a-z]{2,}\b")
+PROPER_RE = re.compile(r"(?<!^)\b[A-ZА-ЯЁӘҒҚҢӨҰҮҺІ][a-zа-яёәғқңөұүһі]{2,}\b")
 HASHTAG_RE = re.compile(r"(?:^|\s)#\w+")
 EMOJI_RE = re.compile(r"[\U0001F300-\U0001FAFF☀-➿]")
 
@@ -95,6 +103,132 @@ IMPERATIVES = {
     "never", "always", "don't", "dont", "do", "put", "run", "check",
 }
 
+# --- Russian -----------------------------------------------------------------
+# Exact forms where a prefix would also catch other words ("сто" is in
+# "стоит"), stems where the word inflects and the stem is unambiguous.
+RU = {
+    "spoken": {
+        "ноль", "нуля", "два", "две", "двух", "три", "трех", "трёх", "четыре", "четырех",
+        "пять", "пяти", "шесть", "шести", "семь", "семи", "восемь", "восьми", "девять",
+        "девяти", "десять", "десяти", "одиннадцать", "двенадцать", "пятнадцать",
+        "двадцать", "двадцати", "тридцать", "тридцати", "сорок", "пятьдесят",
+        "шестьдесят", "семьдесят", "восемьдесят", "девяносто", "сто", "ста", "двести",
+        "триста", "пятьсот", "тысяча", "тысячи", "тысяч", "тысячу", "миллион",
+        "миллиона", "миллионов", "миллиард", "миллиарда", "миллиардов", "полтора",
+        "полторы", "половина", "половину", "вдвое", "втрое", "дважды", "трижды",
+        "десятки", "сотни", "сотен",
+    },
+    "money": {
+        "тенге", "тг", "₸", "рублей", "рубля", "руб", "долларов", "доллара", "баксов",
+        "сумов", "сум", "выручка", "выручку", "выручки", "прибыль", "прибыли",
+        "зарплата", "зарплату", "зарплаты", "аренда", "аренду", "оборот", "млн", "тыс",
+        "млрд", "лям", "ляма", "лямов", "косарь", "процентов", "процента", "бюджет",
+    },
+    "stakes": {
+        "не", "нет", "ни", "никто", "ничего", "никогда", "нельзя", "хватит", "стоп", "без",
+        "вместо", "кроме", "но", "до", "пока", "только", "уже", "еще", "ещё", "против",
+        "зря", "хуже", "раньше", "первый", "первая", "первые", "первых", "правда", "ложь", "минус",
+    },
+    "stake_stems": (
+        "ошиб", "потер", "провал", "увол", "удал", "бесплат", "заплат", "сэконом", "запрещ",
+        "худш", "ненавид", "ненавиж", "обман", "секрет", "скрыт", "скрыва", "украл", "укра",
+        "проблем", "риск", "опасн", "предупрежд", "сожале", "жалею", "слил", "сломал",
+        "разор", "банкрот", "штраф", "долг", "убыт", "потрат", "переплат", "стоил",
+        "обошл", "врут", "врал", "правд", "никогд", "нельз", "провер",
+    ),
+    "weak": [
+        "итак", "так", "ну", "ок", "окей", "привет", "всем привет", "всем", "здравствуйте",
+        "друзья", "ребята", "сегодня", "в общем", "короче", "честно говоря", "слушайте",
+        "давайте", "давай", "я хотел", "я хотела", "я хочу", "хочу", "одна из", "один из",
+        "вы когда", "ты когда", "знаете", "это", "есть", "как вы", "многие", "в этом",
+        "в сегодняшнем", "в современном", "добро", "когда речь", "вот", "кстати",
+    ],
+    "imperatives": {
+        "хватит", "стоп", "перестань", "перестаньте", "забирай", "забирайте", "укради",
+        "копируй", "скопируй", "удали", "удалите", "попробуй", "попробуйте", "смотри",
+        "посмотри", "читай", "прочитай", "сохрани", "сохраните", "сохраняй", "используй",
+        "сделай", "делай", "напиши", "пиши", "отправь", "возьми", "начни", "начните",
+        "брось", "бросьте", "никогда", "всегда", "проверь", "проверьте", "запомни",
+        "забудь", "забудьте", "не",
+    },
+    "you": re.compile(r"\b(?:ты|тебя|тебе|тобой|твой|твоя|твоё|твое|твои|твоих|твоим|вы|вас"
+                      r"|вам|вами|ваш|ваша|ваше|ваши|ваших)\b|\b\w+(?:ешь|ёшь|ишь)\b",
+                      re.IGNORECASE),
+    "me": re.compile(r"\b(?:я|мне|меня|мой|моя|моё|мое|мои|мы|нам|нас|наш|наша|наше|наши)\b",
+                     re.IGNORECASE),
+}
+
+# --- Kazakh ------------------------------------------------------------------
+# Kazakh glues case and person onto the word, so numbers match base + a known
+# suffix ("мыңға", "екіден"), and negation lives in the verb ("жасама",
+# "айтпайды"), which a word list cannot see. "онда" and "оны" are pronouns.
+KK_NUMBER_BASES = (
+    "нөл", "екі", "үш", "төрт", "бес", "алты", "жеті", "сегіз", "тоғыз", "он",
+    "жиырма", "отыз", "қырық", "елу", "алпыс", "жетпіс", "сексен", "тоқсан", "жүз",
+    "мың", "миллион", "миллиард", "жарты", "екеу", "үшеу", "төртеу", "бесеу",
+)
+KK_NUMBER_SUFFIXES = {
+    "", "ға", "ге", "қа", "ке", "на", "не", "а", "е", "нан", "нен", "дан", "ден", "тан",
+    "тен", "да", "де", "та", "те", "нда", "нде", "ды", "ді", "ты", "ті", "ны", "ні",
+    "ның", "нің", "дың", "дің", "тың", "тің", "мен", "бен", "пен", "ыншы", "інші",
+    "ншы", "нші", "еу", "ау", "дай", "дей", "тай", "тей",
+}
+KK_NOT_NUMBERS = {"онда", "оны", "оның", "онан", "оған", "ондай", "ода", "оде"}
+KK = {
+    "spoken": set(),
+    "money": {
+        "теңге", "тенге", "теңгеге", "теңгеден", "теңгені", "тг", "₸", "доллар", "табыс",
+        "табысы", "пайда", "пайдасы", "жалақы", "айлық", "жалдау", "айналым", "млн", "мың",
+        "млрд", "пайыз", "бюджет",
+    },
+    "stakes": {
+        "жоқ", "емес", "ешқашан", "ешкім", "ешнәрсе", "ештеңе", "тоқта", "тоқтат", "бірақ",
+        "тек", "әлі", "бұрын", "дейін", "орнына", "түсті", "онсыз", "бекер", "тегін", "бірінші", "алғашқы",
+        "шын", "шындық", "құпия", "өтірік", "қате", "қателік", "мәселе", "қарсы",
+    },
+    "stake_stems": (
+        "қате", "жоғалт", "шығын", "тұрды", "сындыр", "сәтсіз", "күйре", "өшір", "төле",
+        "үнемде", "тыйым", "нашар", "алдад", "алдан", "өтірік", "жасыр", "ұрла", "проблем",
+        "мәселе", "тәуекел", "қауіп", "ескерт", "өкін", "айыппұл", "қарыз", "банкрот",
+        "тегін", "доғар", "құпия", "шындық",
+    ),
+    "negation": re.compile(r"[^\W\d_]{2,}(?:ма|ме|ба|бе|па|пе)(?:ңыз|ңіз|ңдар|ңдер|ймын|ймін"
+                           r"|йды|йді|йсың|йсің|йсыз|йсіз|ған|ген|ды|ді|дым|дім|дық|дік|с"
+                           r"|сын|сін)?"),
+    "weak": [
+        "сонымен", "жә", "ал енді", "ал", "енді", "сәлем", "сәлеметсіздер", "сәлеметсіз",
+        "армысыздар", "армысыз", "қайырлы", "достар", "бүгін", "бүгінгі", "негізі",
+        "шынымды айтсам", "тыңдаңыз", "мен айтайын", "айтқым келеді", "бұл видеода",
+        "қазіргі", "бәріңізге", "жалпы", "қысқасы", "міне",
+    ],
+    "imperatives": {
+        "тоқта", "тоқтат", "доғар", "алыңыз", "көшір", "көшіріңіз", "өшір", "өшіріңіз",
+        "қара", "қараңыз", "оқы", "оқыңыз", "сақта", "сақтаңыз", "қолдан", "қолданыңыз",
+        "жаса", "жасаңыз", "жаз", "жазыңыз", "жібер", "жіберіңіз", "баста", "бастаңыз",
+        "таста", "тастаңыз", "ешқашан", "әрқашан", "тексер", "тексеріңіз", "ұмыт",
+        "ұмытыңыз", "көр", "көріңіз", "тыңда",
+    },
+    "you": re.compile(r"\b(?:сен|сенің|саған|сені|сенде|сенен|сіз|сіздің|сізге|сізді|сізде"
+                      r"|сізден|сендер|сіздер|сіздерге|сендерге)\b"
+                      r"|\b[^\W\d_]{2,}(?:сың|сің|ңыз|ңіз|ыңыз|іңіз|саң|сең|ңдар|ңдер)\b",
+                      re.IGNORECASE),
+    "me": re.compile(r"\b(?:менің|маған|мені|менде|біз|біздің|бізге|бізді)\b"
+                     r"|\b[^\W\d_]{2,}(?:мын|мін|бын|бін|пын|пін|дым|дім|тым|тім|мыз|міз"
+                     r"|дық|дік|тық|тік)\b", re.IGNORECASE),
+}
+
+VOWELS = set("аеёиоуыэюяәөұүіАЕЁИОУЫЭЮЯӘӨҰҮІ")
+ABBREV_SYLLABLES = {"млн": 3, "млрд": 3, "тыс": 2, "тг": 2, "₸": 2, "%": 2}
+SYLLABLES_PER_SEC = 5.2      # Russian and Kazakh, said briskly to camera
+KK_LETTERS = set("әғқңөұүһіӘҒҚҢӨҰҮҺІ")
+KK_WORDS = {"бұл", "және", "үшін", "емес", "жоқ", "ешкім", "керек", "болады", "деп",
+            "мен", "сен", "сіз", "біз", "олар", "қалай", "неге", "қашан", "қандай",
+            "бар", "бір", "ең", "тек", "бірақ", "енді", "осы", "сол", "мына", "кім"}
+RU_WORDS = {"и", "в", "на", "что", "это", "как", "с", "по", "я", "ты", "вы", "мы",
+            "он", "она", "они", "у", "к", "за", "из", "от", "для", "так", "все",
+            "но", "а", "или", "если", "то", "бы", "же", "ли", "только", "уже",
+            "когда", "где"}
+
 DEALBREAKERS = [
     (re.compile(r"(?i)^\s*(?:stop scrolling|don'?t scroll)"),
      "Opens with \"stop scrolling\". Asking for attention proves you have not earned it."),
@@ -106,6 +240,19 @@ DEALBREAKERS = [
      "Hashtag in the hook. Hashtags belong at the bottom of the caption, if anywhere."),
     (EMOJI_RE,
      "Emoji in the hook. On-screen text at hook size has room for words or for an emoji, not both."),
+    (re.compile(r"(?i)^\s*(?:стоп[,!.]?\s*(?:не\s+)?листай|не листай|не пролистывай|остановись"
+                r"|(?:тоқта[,!.]?\s*)?(?:парақтама|айналдырма|өткізіп\s+жіберме))"),
+     "Начинается с «не листай». Просьба о внимании доказывает, что ты его не заработал."),
+    (re.compile(r"(?i)\b(?:в этом (?:видео|ролике|рилсе)|в сегодняшнем (?:видео|ролике)"
+                r"|сегодня я (?:расскажу|покажу)|я (?:покажу|расскажу) вам"
+                r"|бұл (?:видеода|роликте|рилсте)|бүгінгі (?:видеода|роликте)"
+                r"|бүгін (?:мен\s+)?(?:айтып\s+беремін|көрсетемін))\b"),
+     "Преамбула «в этом видео». Удали и начни с результата."),
+    (re.compile(r"(?i)^\s*(?:всем привет|привет|здравствуйте|добрый (?:день|вечер)|доброе утро"
+                r"|салам|друзья[,!]|ребята[,!]|добро пожаловать"
+                r"|сәлем|сәлеметсіз|армысыз|ассалаумағалейкум|қайырлы (?:күн|таң|кеш)"
+                r"|достар[,!])"),
+     "Приветствие. В ленту никто не пришел, чтобы с ним поздоровались."),
 ]
 
 
@@ -113,34 +260,108 @@ def clamp(n):
     return max(0.0, min(100.0, n))
 
 
+def detect_lang(text):
+    """'en', 'ru' or 'kk'. Same rule as ig-human/humanize.py."""
+    text = re.sub(r"https?://\S+|www\.\S+|[@#]\w+", " ", text)
+    cyr = sum(1 for c in text if "Ѐ" <= c <= "ӿ")
+    lat = sum(1 for c in text if c.isascii() and c.isalpha())
+    if not cyr or cyr < lat:
+        return "en"
+    toks = re.findall(r"[^\W\d_]+", text.lower())
+    kk = sum(1 for c in text if c in KK_LETTERS) + 2 * sum(1 for t in toks if t in KK_WORDS)
+    ru = 2 * sum(1 for t in toks if t in RU_WORDS)
+    return "kk" if kk > ru else "ru"
+
+
 def words(text):
-    # "$18,000" is one word when it is spoken, so it is one word here too.
+    # "$18,000" and "18 000" are one word when spoken, so they are one word here too.
+    text = re.sub(r"(?<=\d)[  ](?=\d{3}\b)", "", text)
     return WORD_RE.findall(re.sub(r"(?<=\d),(?=\d)", "", text))
 
 
-def check_length(text):
+def syllables(text):
+    """Vowels per word, plus a rough count for digits and abbreviations said aloud."""
+    n = 0
+    for w in words(text):
+        low = w.lower()
+        if low in ABBREV_SYLLABLES:
+            n += ABBREV_SYLLABLES[low]
+            continue
+        digits = sum(1 for c in w if c.isdigit())
+        n += sum(1 for c in w if c in VOWELS) + (min(8, max(1, round(digits * 1.7))) if digits else 0)
+    return n
+
+
+def _is_kk_number(tok):
+    if tok in KK_NOT_NUMBERS:
+        return False
+    return any(tok.startswith(b) and tok[len(b):] in KK_NUMBER_SUFFIXES for b in KK_NUMBER_BASES)
+
+
+def _lists(lang):
+    return {"ru": RU, "kk": KK}.get(lang)
+
+
+def is_spoken_number(tok, lang):
+    if lang == "en":
+        return tok in SPOKEN_NUMBERS
+    if lang == "kk":
+        return _is_kk_number(tok)
+    return tok in RU["spoken"]
+
+
+def is_money(tok, lang):
+    return tok in MONEY_WORDS if lang == "en" else tok in _lists(lang)["money"]
+
+
+def is_stake(tok, lang):
+    if lang == "en":
+        return tok in STAKES
+    L = _lists(lang)
+    if tok in L["stakes"] or any(tok.startswith(s) for s in L["stake_stems"]):
+        return True
+    return bool(lang == "kk" and KK["negation"].fullmatch(tok))
+
+
+def check_length(text, lang="en"):
     """A hook has to land before the thumb moves. Roughly two seconds."""
     w = words(text)
     n = len(w)
-    secs = n / 2.75                      # ~165 words per minute, spoken
     chars = len(text.strip())
-    if 5 <= n <= 12:
+    if lang == "en":
+        secs = n / 2.75                      # ~165 words per minute, spoken
+        if 5 <= n <= 12:
+            score = 100.0
+        elif n < 5:
+            score = clamp(100 - (5 - n) * 20)
+        else:
+            score = clamp(100 - (n - 12) * 11)
+        if chars > 60:                       # two lines of big on-screen text
+            score -= 12
+        return clamp(score), f"{n} words, {chars} chars, ~{secs:.1f}s spoken (want 5-12 words)"
+    # Russian and Kazakh words run long, so time the syllables instead. The
+    # window matches the English one: 5 to 12 words at 165 wpm is 1.8 to 4.4s.
+    syl = syllables(text)
+    secs = syl / SYLLABLES_PER_SEC
+    if 1.4 <= secs <= 4.2:
         score = 100.0
-    elif n < 5:
-        score = clamp(100 - (5 - n) * 20)
+    elif secs < 1.4:
+        score = clamp(100 - (1.4 - secs) * 50)
     else:
-        score = clamp(100 - (n - 12) * 11)
-    if chars > 60:                       # two lines of big on-screen text
+        score = clamp(100 - (secs - 4.2) * 30)
+    if chars > 70:                           # Cyrillic sets wider on screen
         score -= 12
-    return clamp(score), f"{n} words, {chars} chars, ~{secs:.1f}s spoken (want 5-12 words)"
+    return clamp(score), (f"{n} words, {syl} syllables, {chars} chars, ~{secs:.1f}s spoken "
+                          f"(want under ~4s)")
 
 
-def check_specificity(text):
+def check_specificity(text, lang="en"):
     """One concrete thing beats three abstract ones."""
-    nums = [n.strip() for n in NUMBER_RE.findall(text) if n.strip()]
+    flat = re.sub(r"(?<=\d)[  ](?=\d{3}\b)", "", text)
+    nums = [n.strip() for n in NUMBER_RE.findall(flat) if n.strip()]
     propers = set(PROPER_RE.findall(text))
     low = [w.lower().strip("'’") for w in words(text)]
-    spoken = [w for w in low if w in SPOKEN_NUMBERS or w in MONEY_WORDS]
+    spoken = [w for w in low if is_spoken_number(w, lang) or is_money(w, lang)]
     hits = len(nums) + len(propers) + len(spoken)
     score = 15.0 if hits == 0 else clamp(45 + hits * 30)
     found = ", ".join(nums[:2] + sorted(propers)[:2] + spoken[:2])
@@ -148,12 +369,12 @@ def check_specificity(text):
                    " - no number, no name, nothing checkable"))
 
 
-def check_stakes(text):
+def check_stakes(text, lang="en"):
     """Tension, cost, negation. Something the viewer might lose."""
     w = [x.lower().strip("'’") for x in words(text)]
-    hits = [x for x in w if x in STAKES]
+    hits = [x for x in w if is_stake(x, lang)]
     markers = sorted(set(hits))
-    if re.search(r"\$\s?\d", text):
+    if re.search(r"\$\s?\d|\d\s?₸|₸\s?\d", text):
         markers.append("a price")
     n = len(markers)
     score = {0: 20.0, 1: 70.0}.get(n, 100.0)
@@ -162,7 +383,7 @@ def check_stakes(text):
     return clamp(score), detail
 
 
-def check_frontload(text):
+def check_frontload(text, lang="en"):
     """The interesting word cannot be in position nine."""
     w = words(text)
     if not w:
@@ -171,13 +392,18 @@ def check_frontload(text):
     opener = " ".join(low[:2])
     penalty = 0
     hit_opener = None
-    for weak in WEAK_OPENERS:
-        if opener.startswith(weak) or low[0] == weak:
+    weak_list = WEAK_OPENERS if lang == "en" else _lists(lang)["weak"]
+    for weak in weak_list:
+        # English keeps its original prefix match; ru/kk match whole words,
+        # because "это" would otherwise catch "этот".
+        hit = (opener.startswith(weak) or low[0] == weak) if lang == "en" else \
+            (opener + " ").startswith(weak + " ")
+        if hit:
             penalty, hit_opener = 30, weak
             break
     payload = None
     for i, token in enumerate(low):
-        if (token in STAKES or token in SPOKEN_NUMBERS or token in MONEY_WORDS
+        if (is_stake(token, lang) or is_spoken_number(token, lang) or is_money(token, lang)
                 or NUMBER_RE.match(w[i]) or (i and PROPER_RE.match(w[i]))):
             payload = i
             break
@@ -197,15 +423,28 @@ def check_frontload(text):
     return clamp(base - penalty), detail
 
 
-def check_address(text):
+def check_address(text, lang="en"):
     """Aimed at one viewer, or floating in the air."""
     low = text.lower()
     w = [x.lower().strip("'’") for x in words(text)]
-    if re.search(r"\b(you|your|you're|youre|yourself)\b", low):
+    if lang == "en":
+        if re.search(r"\b(you|your|you're|youre|yourself)\b", low):
+            return 100.0, "speaks to the viewer"
+        if w and w[0] in IMPERATIVES:
+            return 90.0, f"imperative opener (\"{w[0]}\")"
+        if re.search(r"\b(i|my|me|we|our)\b", low):
+            return 70.0, "first person, no viewer named"
+        return 35.0, "third person, nobody in the room"
+    L = _lists(lang)
+    if L["you"].search(low):
         return 100.0, "speaks to the viewer"
-    if w and w[0] in IMPERATIVES:
-        return 90.0, f"imperative opener (\"{w[0]}\")"
-    if re.search(r"\b(i|my|me|we|our)\b", low):
+    # Kazakh puts the verb last, so an imperative can close the hook as well.
+    ends = ([w[0]] + ([w[-1]] if lang == "kk" and len(w) > 1 else [])) if w else []
+    imp = next((x for x in ends if x in L["imperatives"]
+                or (lang == "kk" and re.fullmatch(r"[^\W\d_]{2,}(?:ма|ме|ба|бе|па|пе)", x))), None)
+    if imp:
+        return 90.0, f"imperative (\"{imp}\")"
+    if L["me"].search(low):
         return 70.0, "first person, no viewer named"
     return 35.0, "third person, nobody in the room"
 
@@ -213,13 +452,14 @@ def check_address(text):
 CHECKS = ["LENGTH", "SPECIFICITY", "STAKES", "FRONTLOAD", "ADDRESS"]
 
 
-def run(text):
+def run(text, lang=None):
+    lang = lang or detect_lang(text)
     results = {
-        "LENGTH": check_length(text),
-        "SPECIFICITY": check_specificity(text),
-        "STAKES": check_stakes(text),
-        "FRONTLOAD": check_frontload(text),
-        "ADDRESS": check_address(text),
+        "LENGTH": check_length(text, lang),
+        "SPECIFICITY": check_specificity(text, lang),
+        "STAKES": check_stakes(text, lang),
+        "FRONTLOAD": check_frontload(text, lang),
+        "ADDRESS": check_address(text, lang),
     }
     flags = [msg for pattern, msg in DEALBREAKERS if pattern.search(text)]
     scores = [results[c][0] for c in CHECKS]
@@ -272,6 +512,7 @@ def main():
     ap = argparse.ArgumentParser(description="Score a Reel hook on five properties.")
     ap.add_argument("input", nargs="?", default="-", help="file with one hook per line, or -")
     ap.add_argument("--hook", help="score a single hook given on the command line")
+    ap.add_argument("--lang", choices=["en", "ru", "kk"], help="skip detection")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
 
@@ -286,7 +527,7 @@ def main():
 
     payload = []
     for line in lines:
-        results, overall, verdict, flags = run(line)
+        results, overall, verdict, flags = run(line, args.lang)
         payload.append({
             "hook": line,
             "checks": {k: {"score": round(v[0], 1), "detail": v[1]} for k, v in results.items()},
@@ -301,7 +542,7 @@ def main():
         return
 
     if len(payload) == 1:
-        results, overall, verdict, flags = run(lines[0])
+        results, overall, verdict, flags = run(lines[0], args.lang)
         render_one(lines[0], results, overall, verdict, flags)
     else:
         render_table(sorted(payload, key=lambda r: -r["score"]))

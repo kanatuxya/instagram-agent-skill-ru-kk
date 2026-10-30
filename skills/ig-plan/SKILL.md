@@ -1,13 +1,20 @@
 ---
 name: ig-plan
 description: >-
-  Build the week on Instagram - what to post, which format, when, and who to
-  engage with. Use when the user says "plan my week", "what should I post",
-  "content calendar", "I have nothing to post about", or wants a posting
-  schedule and an engagement list.
+  План на неделю в Instagram: что выкладывать, в каком формате, когда и с кем
+  взаимодействовать. Используй, когда просят «план на неделю», «что выложить»,
+  «контент-план», «не о чем постить», «апталық жоспар», «не салсам екен», или
+  нужен график публикаций и список аккаунтов для вовлечения. Weekly plan,
+  content calendar.
 ---
 
 # ig-plan
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
+
+- Время публикаций считай по часовому поясу аудитории: Казахстан и Узбекистан UTC+5, Москва UTC+3.
 
 The control room. Everything else in this pack executes; this decides what gets
 executed. Run it once a week, on the same day.

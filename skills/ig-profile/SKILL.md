@@ -1,14 +1,20 @@
 ---
 name: ig-profile
 description: >-
-  Score an Instagram profile out of 100 against a 12-part rubric and rewrite
-  the parts that lose points - name field, bio, link, highlights, pinned three,
-  grid. Use when the user says "optimize my profile", "fix my bio", "score my
-  Instagram", "why don't people follow me", or pastes their profile and asks how
-  it reads.
+  Оценка профиля Instagram из 100 по 12 пунктам и переписывание того, что
+  теряет баллы: поле имени, био, ссылка, хайлайтс, закрепленные посты, сетка.
+  Используй, когда просят «улучши профиль», «перепиши шапку», «оцени мой
+  инстаграм», «почему не подписываются», «профильді бағала», «шапканы түзе».
+  Profile, bio.
 ---
 
 # ig-profile
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
+
+- Поле имени (30 знаков) ищется по словам. Ставь туда то, что люди набирают по-русски или по-казахски: «Имя | подготовка к ЕНТ», а не только имя.
 
 Almost everybody optimises the wrong thing here. The profile is not a
 storefront people browse. It is a **decision screen**, arrived at from one

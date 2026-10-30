@@ -1,14 +1,19 @@
 ---
 name: ig-repurpose
 description: >-
-  Turn one long asset - a YouTube video, podcast, livestream, newsletter, blog
-  post or client call - into a week of reels and carousels. Use when the user
-  says "repurpose this", "turn this into reels", "I have a video/podcast/
-  transcript", "cut this up", or pastes something long and wants it on
-  Instagram.
+  Превращает один длинный материал (видео, подкаст, эфир, статью, рассылку,
+  звонок) в неделю рилсов и каруселей для Instagram. Используй, когда просят
+  «нарежь на рилсы», «переупакуй», «сделай из этого контент», «есть видео,
+  подкаст или расшифровка», «бұдан рилс жаса». Repurpose.
 ---
 
 # ig-repurpose
+
+## Язык
+
+Пиши на языке аккаунта, русском или казахском, по `~/.claude/instagram/voice.md`. Если язык неясен, спроси одним вопросом. Пользователю объясняй на языке, на котором он пишет. Перед первым черновиком прочитай `ig-human/ru-kk.md`: там правила про «ё», тире, «ЖИ», ₸ и ключевые слова, а также что в ru/kk-части не проверено. Примеры ниже на английском: бери из них форму, а не текст для перевода.
+
+- Если исходник на одном языке, а аккаунт на другом, это перевод: спроси, прежде чем переводить.
 
 One good long asset contains four to six posts. Most people extract one and
 throw the rest away.
